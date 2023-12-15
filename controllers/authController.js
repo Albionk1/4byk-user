@@ -74,3 +74,13 @@ module.exports.login = async (req, res) => {
       res.status(400).json({ errors })
     }
   }
+
+module.exports.addUser = async(req,res)=>{
+  try{
+ const {full_name,country,email,password,type} = req.body
+  }
+  catch(e){
+    const errors = handleErrors(e)
+      res.status(400).json({ errors })
+  }
+}

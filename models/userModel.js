@@ -10,8 +10,8 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: {
         values: [
-          'Service',
-          'MobileShop',
+          'user',
+          'admin',
         ],
         message: `Autorizimi nuk është i saktë`,
       },
@@ -20,13 +20,6 @@ const userSchema = new mongoose.Schema(
     image: {
       type: String,
     },
-    phoneNumber: {
-        type: String,
-        required: [true, 'Numri i telefonit është i zbrazët'],
-      },
-      image: {
-        type: String,
-      },
     username: {
       type: String,
       unique: true,
@@ -64,6 +57,17 @@ const userSchema = new mongoose.Schema(
         message:
           'Fjalkalimi duhet të ketë më së paku një shkronjë të madhe një të vogël dhe një simbol dhe nje numër',
       },
+    },
+    coutry: {
+      type: String,
+      enum: {
+        values:countries,
+        message: `Autorizimi nuk është i saktë`,
+      },
+      required: [true, 'Autorizimi është i zbrazët'],
+    },
+    city: {
+      type: String,
     },
     isActive: {
       type: Boolean,

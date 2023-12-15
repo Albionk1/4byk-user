@@ -40,7 +40,5 @@ const routeLimiter = rateLimit({
     })
   const router = express.Router();
 router.post('/login',routeLimiter,authController.login)
-router.get('/logout',authController.logout)
-router.post('/create-service',authController.createService)
-router.post('/create-mobileshop',authController.createMobileShop)
+router.post('/add-user',authController.addUser)
 module.exports=router
