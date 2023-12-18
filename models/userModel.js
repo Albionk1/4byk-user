@@ -2,9 +2,9 @@ const mongoose = require('mongoose')
 const bcrypt = require('bcryptjs')
 const userSchema = new mongoose.Schema(
   {
-    businessName: {
+    full_name: {
         type: String,
-        required: [true, 'Emri i biznesit është i zbrazët'],
+        required: [true, 'Fullname is required'],
       },
     role: {
       type: String,
@@ -12,35 +12,40 @@ const userSchema = new mongoose.Schema(
         values: [
           'user',
           'admin',
+          'seller',
         ],
-        message: `Autorizimi nuk është i saktë`,
+        message: `Role is not correct`,
       },
-      required: [true, 'Autorizimi është i zbrazët'],
+      required: [true, 'Role is required'],
+    },
+    type: {
+      type: String,
+      enum: {
+        values: [
+          'blog',
+          'forum',
+          'business',
+        ],
+        message: `Role is not correct`,
+      },
+      required: [true, 'Role is required'],
     },
     image: {
       type: String,
     },
-    username: {
+    email: {
       type: String,
       unique: true,
       sparse: true,
       trim: true,
       required: [true,
-        'Emri i përdoruesit është i zbrazët',
+        'Email is required',
       ],
-      maxLength: [
-        100,
-        'Emri i perdoruesit nuk duhet te jet me i gjat se 100 karaktere',
-      ],
-      validate(value) {
-        if (value == '') {
-          throw new Error('Emri i përdoruesit është i zbrazët')
-        }
-        if (value.length < 3) {
-          throw new Error(
-            'Emri i përdoruesit duhet të jetë më i gjatë se 3 karaktere'
-          )
-        }
+      validate: {
+        validator: function (v) {
+          return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v)
+        },
+        message: 'valide',
       },
     },
     password: {
