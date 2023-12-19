@@ -4,9 +4,8 @@ const cookieParser = require('cookie-parser')
 const mongoose = require('mongoose')
 var bodyParser = require('body-parser')
 
-const viewRouter = require('./routes/viewRoutes')
+
 const authRouter = require('./routes/authRoutes')
-const apiRouter = require('./routes/apiRoutes')
 
 
 const dotenv = require('dotenv');
@@ -48,7 +47,9 @@ app.use('/', authRouter)
 // const db = mongoose.connection
 // db.on('error', console.error.bind(console, 'connection error:'))
 
-
+mongoose.connect(process.env.DATABASE, { useNewUrlParser: true })
+const db = mongoose.connection
+db.on('error', console.error.bind(console, 'connection error:'))
 app.listen(process.env.PORT, () => {
     console.log(`App running on port ${process.env.PORT}...`);
 });

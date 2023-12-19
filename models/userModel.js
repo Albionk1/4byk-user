@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const bcrypt = require('bcryptjs')
+let countries = ["AF","AX","AL","DZ","AS","AD","AO","AI","AG","AR","AM","AW","AU","AT","AZ","BS","BH","BD","BB","BY","BE","BZ","BJ","BM","BT","BO","BQ","BA","BW","BR","IO","BN","BG","BF","BI","KH","CM","CA","CV","KY","CF","TD","CL","CN","CX","CC","CO","KM","CK","CR","CI","HR","CU","CW","CZ","DK","DJ","DM","DO","EC","EG","SV","GQ","ER","EE","ET","FK","FJ","FI","FR","PF","GA","GM","GE","DE","GH","GI","GR","GL","GD","GU","GT","GG","GN","GW","HT","VA","HN","HK","HU","IS","IN","ID","IR","IQ","IE","IM","IL","IT","JM","JP","JE","JO","KZ","KE","KI","KP","KS","KW","KG","LA","LV","LB","LS","LR","LY","LI","LT","LU","MO","MG","MW","MY","MV","ML","MT","MH","MQ","MR","MX","FM","MD","MC","MN","ME","MS","MA","MZ","MM","NA","NR","NP","NL","NZ","NI","NE","NG","NU","NF","MP","NO","OM","PK","PW","PS","PA","PG","PY","PE","PH","PL","PT","PR","QA","RO","RU","RW","BL","KN","LC","MF","VC","WS","SM","ST","SA","SN","RS","SC","SL","SG","SX","SK","SI","SB","SO","ZA","KR","SS","ES","LK","SD","SR","SZ","SE","CH","SY","TW","TJ","TZ","TH","TG","TK","TO","TT","TN","TR","TM","TC","TV","UG","UA","AE","GB","US","UY","UZ","VU","VE","VN","VI","YE","ZM","ZW"]
 const userSchema = new mongoose.Schema(
   {
     full_name: {
@@ -28,7 +29,9 @@ const userSchema = new mongoose.Schema(
         ],
         message: `Role is not correct`,
       },
-      required: [true, 'Role is required'],
+      required: [ function () {
+        return this.role !== 'admin'
+      }, 'Role is required'],
     },
     image: {
       type: String,
@@ -79,9 +82,6 @@ const userSchema = new mongoose.Schema(
       default: true,
       required: [true, 'Perdoruesi duhet te ket nje status boolean'],
     },
-    api_key: {
-      type: String,
-    },
     deleted: {
       type: Boolean,
       default: false
@@ -91,6 +91,7 @@ const userSchema = new mongoose.Schema(
     timestamps: true,
   }
 )
+
 
 userSchema.statics.login = async function (email, password) {
   const user = await this.findOne({ $or: [{ email }, { username: email }] })
