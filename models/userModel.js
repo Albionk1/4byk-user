@@ -25,13 +25,26 @@ const userSchema = new mongoose.Schema(
         values: [
           'blog',
           'forum',
-          'business',
+          'seller',
         ],
-        message: `Role is not correct`,
+        message: `Type is not correct`,
       },
       required: [ function () {
         return this.role !== 'admin'
-      }, 'Role is required'],
+      }, 'Type is required'],
+    },
+   acount_type: {
+      type: String,
+      enum: {
+        values: [
+          'personal',
+          'business',
+        ],
+        message: `Acount type is not correct`,
+      },
+      required: [ function () {
+        return this.role !== 'admin'
+      }, 'Acount type is required'],
     },
     image: {
       type: String,
@@ -66,7 +79,7 @@ const userSchema = new mongoose.Schema(
           'Fjalkalimi duhet të ketë më së paku një shkronjë të madhe një të vogël dhe një simbol dhe nje numër',
       },
     },
-    coutry: {
+    country: {
       type: String,
       enum: {
         values:countries,

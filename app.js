@@ -3,7 +3,7 @@ const express = require('express')
 const cookieParser = require('cookie-parser')
 const mongoose = require('mongoose')
 var bodyParser = require('body-parser')
-
+const cors = require('cors');
 
 const authRouter = require('./routes/authRoutes')
 
@@ -20,6 +20,7 @@ process.on('uncaughtException', function (err) {
 
 
 const app = express()
+app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json('application/json'))
 app.set('view engine', 'ejs')
@@ -28,7 +29,6 @@ app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
 app.use(express.json())
 app.use(express.static(path.join(__dirname, 'public')))
-
 
 
 
