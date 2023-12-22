@@ -87,8 +87,9 @@ const userSchema = new mongoose.Schema(
       },
       required: [true, 'Autorizimi është i zbrazët'],
     },
-    city: {
+    proffesion: {
       type: String,
+      required: [true, 'proffesion is required'],
     },
     isActive: {
       type: Boolean,
