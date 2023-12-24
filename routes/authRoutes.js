@@ -41,4 +41,5 @@ const routeLimiter = rateLimit({
   const router = express.Router();
 router.post('/login',routeLimiter,authController.login)
 router.post('/add-user',authController.addUser)
+router.post('/get-user-id',authController.getUserById)
 module.exports=router

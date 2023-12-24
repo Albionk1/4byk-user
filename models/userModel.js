@@ -13,7 +13,6 @@ const userSchema = new mongoose.Schema(
         values: [
           'user',
           'admin',
-          'seller',
         ],
         message: `Role is not correct`,
       },

@@ -77,12 +77,23 @@ module.exports.login = async (req, res) => {
 
 module.exports.addUser = async(req,res)=>{
   try{
- const {full_name,role,country,email,password,type,city} = req.body
- const user = await User.create({full_name,role,country,email,password,type,city})
+ const {full_name,country,email,password,type,city,acount_type} = req.body
+ const user = await User.create({full_name,role:'user',country,email,password,type,city,acount_type})
  res.send({status:'success',message:'User has been created'})
   }
   catch(e){
     const errors = handleErrors(e)
       res.status(400).json({ errors })
+  }
+}
+
+module.exports.getUserById = async(req,res)=>{
+  try{
+     const id = req.body.id
+     const user = await User.findById(id)
+     res.send(user)
+  }
+  catch(e){
+   res.send('')
   }
 }
