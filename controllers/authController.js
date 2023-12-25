@@ -75,10 +75,22 @@ module.exports.login = async (req, res) => {
     }
   }
 
-module.exports.addUser = async(req,res)=>{
+module.exports.addUserBlog = async(req,res)=>{
   try{
- const {full_name,country,email,password,type,city,acount_type} = req.body
- const user = await User.create({full_name,role:'user',country,email,password,type,city,acount_type})
+ const {full_name,country,email,password,acount_type,proffesion,writenArticle,instagram_link,facebook_link,linkedIn_link,tiktok_link} = req.body
+ const user = await User.create({full_name,role:'user',country,email,password,type:'blog',acount_type,proffesion,writenArticle,instagram_link,facebook_link,linkedIn_link,tiktok_link})
+ res.send({status:'success',message:'User has been created'})
+  }
+  catch(e){
+    const errors = handleErrors(e)
+      res.status(400).json({ errors })
+  }
+}
+
+module.exports.addUserForum = async(req,res)=>{
+  try{
+ const {full_name,country,email,password,acount_type,proffesion,writenArticle,instagram_link,facebook_link,linkedIn_link,tiktok_link} = req.body
+ const user = await User.create({full_name,role:'user',country,email,password,type:'forum',acount_type,proffesion,writenArticle,instagram_link,facebook_link,linkedIn_link,tiktok_link})
  res.send({status:'success',message:'User has been created'})
   }
   catch(e){

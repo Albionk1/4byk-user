@@ -32,6 +32,43 @@ const userSchema = new mongoose.Schema(
         return this.role !== 'admin'
       }, 'Type is required'],
     },
+    gender: {
+      type: String,
+      enum: {
+        values: [
+          'male',
+          'female',
+        ],
+        message: `Type is not correct`,
+      },
+      required: [ function () {
+        return this.type == 'seller'
+      }, 'gender is required'],
+    },
+    city: {
+      type: String,
+      required: [ function () {
+        return this.type == 'seller'
+      }, 'gender is required'],
+    },
+    address: {
+      type: String,
+      required: [ function () {
+        return this.type == 'seller'
+      }, 'Address is required'],
+    },
+    proffesion: {
+      type: String,
+      required: [ function () {
+        return this.type !== 'seller'
+      }, 'Proffesion is required'],
+    },
+    writenArticle: {
+      type: Boolean,
+      required: [ function () {
+        return this.type !== 'seller'
+      }, 'This is required'],
+    },
    acount_type: {
       type: String,
       enum: {
@@ -86,9 +123,17 @@ const userSchema = new mongoose.Schema(
       },
       required: [true, 'Autorizimi është i zbrazët'],
     },
-    proffesion: {
+    instagram_link: {
       type: String,
-      required: [true, 'proffesion is required'],
+    },
+    facebook_link: {
+      type: String,
+    }, 
+    linkedIn_link: {
+      type: String,
+    }, 
+    tiktok_link: {
+      type: String,
     },
     isActive: {
       type: Boolean,
