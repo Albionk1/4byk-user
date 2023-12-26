@@ -99,6 +99,18 @@ module.exports.addUserForum = async(req,res)=>{
   }
 }
 
+module.exports.addUserSeller = async(req,res)=>{
+  try{
+ const {full_name,country,email,password,acount_type,proffesion,writenArticle,city,address,gender,bio} = req.body
+ const user = await User.create({full_name,role:'user',country,email,password,type:'seller',acount_type,proffesion,writenArticle,city,address,gender,bio})
+ res.send({status:'success',message:'User has been created'})
+  }
+  catch(e){
+    const errors = handleErrors(e)
+      res.status(400).json({ errors })
+  }
+}
+
 module.exports.getUserById = async(req,res)=>{
   try{
      const id = req.body.id
