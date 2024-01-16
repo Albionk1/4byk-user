@@ -6,6 +6,8 @@ var bodyParser = require('body-parser')
 const cors = require('cors');
 
 const authRouter = require('./routes/authRoutes')
+const authRouterMobile = require('./routes/mobileRoutes/authRoutesMobile')
+
 
 
 const dotenv = require('dotenv');
@@ -22,7 +24,7 @@ process.on('uncaughtException', function (err) {
 const app = express()
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }))
-app.use(bodyParser.json('application/json'))
+// app.use(bodyParser.json('application/json'))
 app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname, 'views'))
 app.use(express.urlencoded({ extended: true }))
@@ -37,6 +39,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 
 
 app.use('/', authRouter)
+app.use('/api/v1/mobile/auth', authRouterMobile)
 
 
 //app.use('/', clientRouter)

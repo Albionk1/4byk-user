@@ -88,6 +88,27 @@ const checkUser = async (req, res, next) => {
   }
 }
 
+const accessStaff = (access) => {
+  return (req, res, next) => {
+    if (req.user) {
+      if (req.user&&req.user.role === 'superadmin') {
+        return next()
+      }
+      if (req.user&& req.user.role === 'admin') {
+        if (req.user.access.includes(access)) {
+          return next()
+        } else {
+          return res.redirect('back')
+        }
+      } else {
+        return res.redirect('back')
+      }
+    } else {
+      return res.redirect('back')
+    }
+  }
+}
+
 const checkLogin = (req, res, next) => {
   const token = req.cookies.jwt
   if (token) {
@@ -118,6 +139,7 @@ module.exports = {
   requireAuth,
   authRole,
   checkUser,
+  accessStaff,
   checkLogin,
 
 }

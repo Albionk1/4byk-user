@@ -13,62 +13,43 @@ const userSchema = new mongoose.Schema(
         values: [
           'user',
           'admin',
+          'superadmin'
         ],
         message: `Role is not correct`,
       },
       required: [true, 'Role is required'],
     },
-    type: {
-      type: String,
-      enum: {
-        values: [
-          'blog',
-          'forum',
-          'seller',
-        ],
-        message: `Type is not correct`,
-      },
-      required: [ function () {
-        return this.role !== 'admin'
-      }, 'Type is required'],
+    access:{
+      type:String,
+      required:[function () {
+        return this.role == 'admin'
+      },'acces is required']
     },
-    gender: {
-      type: String,
-      enum: {
-        values: [
-          'male',
-          'female',
-        ],
-        message: `Type is not correct`,
-      },
-      required: [ function () {
-        return this.type == 'seller'
-      }, 'gender is required'],
-    },
-    city: {
-      type: String,
-      required: [ function () {
-        return this.type == 'seller'
-      }, 'gender is required'],
-    },
-    address: {
-      type: String,
-      required: [ function () {
-        return this.type == 'seller'
-      }, 'Address is required'],
-    },
-    proffesion: {
-      type: String,
-      required: [ function () {
-        return this.type !== 'seller'
-      }, 'Proffesion is required'],
-    },
-    writenArticle: {
-      type: Boolean,
-      required: [ function () {
-        return this.type !== 'seller'
-      }, 'This is required'],
-    },
+    // gender: {
+    //   type: String,
+    //   enum: {
+    //     values: [
+    //       'male',
+    //       'female',
+    //     ],
+    //     message: `Type is not correct`,
+    //   },
+    //   required: [ function () {
+    //     return this.acount_type == 'personal'
+    //   }, 'gender is required'],
+    // },
+    // address: {
+    //   type: String,
+    //   required: [ function () {
+    //     return this.type == 'seller'
+    //   }, 'Address is required'],
+    // },
+    // writenArticle: {
+    //   type: Boolean,
+    //   required: [ function () {
+    //     return this.type !== 'seller'
+    //   }, 'This is required'],
+    // },
    acount_type: {
       type: String,
       enum: {
@@ -119,9 +100,9 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: {
         values:countries,
-        message: `Autorizimi nuk është i saktë`,
+        message: `State is invalid`,
       },
-      required: [true, 'Autorizimi është i zbrazët'],
+      required: [true, 'State is required'],
     },
     instagram_link: {
       type: String,
@@ -143,6 +124,10 @@ const userSchema = new mongoose.Schema(
     deleted: {
       type: Boolean,
       default: false
+    },
+    ban: {
+      type: Boolean,
+      default: false
     }
   },
   {
@@ -152,19 +137,20 @@ const userSchema = new mongoose.Schema(
 
 
 userSchema.statics.login = async function (email, password) {
-  const user = await this.findOne({ $or: [{ email }, { username: email }] })
+  // const user = await this.findOne({ $or: [{ email }, { username: email }] })
+  const user = await this.findOne({  email  })
   if (user) {
     const auth = await bcrypt.compare(password, user.password)
     if (auth) {
       return user
     }
-    if (!email.includes('@')) {
+    if (email &&!email.includes('@')) {
       throw Error('incorrect password username')
     } else {
       throw Error('incorrect password')
     }
   }
-  if (!email.includes('@')) {
+  if (email && !email.includes('@')) {
     throw Error('incorrect username')
   } else {
     throw Error('incorrect email')

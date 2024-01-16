@@ -1,6 +1,6 @@
 const express = require('express');
-const authController = require('../controllers/authController')
-const { requireAuth, authRole, checkUser, checkLogin } = require('../middlewares/authMiddleware')
+const authController = require('../../controllers/mobileControler/authControllerMobile')
+const { requireAuth, authRole, checkUser, checkLogin } = require('../../middlewares/authMiddleware')
 const path = require('path');
 const multer = require('multer')
 const rateLimit = require("express-rate-limit");
@@ -40,9 +40,5 @@ const routeLimiter = rateLimit({
     })
   const router = express.Router();
   
-router.post('/login',upload.none(),authController.login)
-router.post('/add-user',upload.single('image'),authController.addUser)
-router.post('/edit-user',upload.single('image'),authController.updateUser)
-router.post('/add-admin',upload.single('image'),authController.addAdmin)
-router.post('/get-user-id',authController.getUserById)
+router.post('/login',authController.login)
 module.exports=router

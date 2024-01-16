@@ -1,4 +1,4 @@
-const User = require('../models/userModel')
+const User = require('../../models/userModel')
 const url = require('url')
 const maxAge = 3 * 24 * 60 * 60
 const jwt = require('jsonwebtoken')
@@ -8,7 +8,6 @@ const createToken = (id) => {
   })
 }
 // const { uploadFile, getFileStream, deleteImage } = require('../aws')
-const { uploadFile, getFileStream, deleteImage } = require('../aws')
 
 const handleErrors = (err) => {
   let errors = {}
@@ -61,7 +60,6 @@ const handleErrors = (err) => {
 module.exports.login = async (req, res) => {
     try {  
     const { email, password } = req.body
-      console.log(email,password)
       const user = await User.login(email, password)
       if (user.isActive !== false) {
         const token = createToken(user._id)
@@ -102,38 +100,5 @@ module.exports.updateUser = async(req,res)=>{
   catch(e){
     const errors = handleErrors(e)
       res.status(400).json({ errors })
-  }
-}
-
-module.exports.addAdmin = async(req,res)=>{
-  try{
-    req.body.image = ''
-    if (req.file) {
-      const result = await uploadFile(req.file)
-        .then((result) => {
-          req.body.image = result.Key
-        })
-        .catch((error) => {
-          console.log(error)
-        })
-    }
- const {full_name,email,password,access} = req.body
- const user = await User.create({full_name,role:'admin',email,password,access,image})
- res.send({status:'success',message:'added'})
-  }
-  catch(e){
-    const errors = handleErrors(e)
-      res.status(400).json({ errors })
-  }
-}
-
-module.exports.getUserById = async(req,res)=>{
-  try{
-     const id = req.body.id
-     const user = await User.findById(id)
-     res.send(user)
-  }
-  catch(e){
-   res.send('')
   }
 }
