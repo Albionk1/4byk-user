@@ -39,11 +39,12 @@ const routeLimiter = rateLimit({
       limits: { fileSize: 5000000 },
     })
   const router = express.Router();
-  
+router.post('/get-user-id',authController.getUserById)
 router.post('/login',upload.none(),authController.login)
 router.post('/add-user',upload.single('image'),authController.addUser)
 router.post('/edit-user',upload.single('image'),authController.updateUser)
 router.post('/add-admin',upload.single('image'),authController.addAdmin)
-router.post('/get-user-id',authController.getUserById)
 router.get('/get-admin-list',authController.getAdminList)
+router.post('/edit-admin',upload.single('image'),authController.editAdmin)
+router.patch('/delete-admin',upload.none(),authController.deleteAdmin)
 module.exports=router

@@ -58,6 +58,16 @@ const handleErrors = (err) => {
   }
   return errors
 }
+module.exports.getUserById = async(req,res)=>{
+  try{
+     const id = req.body.id
+     const user = await User.findById(id)
+     res.send(user)
+  }
+  catch(e){
+   res.send('')
+  }
+}
 module.exports.login = async (req, res) => {
     try {  
     const { email, password } = req.body
@@ -134,16 +144,7 @@ module.exports.addAdmin = async(req,res)=>{
   }
 }
 
-module.exports.getUserById = async(req,res)=>{
-  try{
-     const id = req.body.id
-     const user = await User.findById(id)
-     res.send(user)
-  }
-  catch(e){
-   res.send('')
-  }
-}
+
 module.exports.getAdminList = async (req, res) => {
   try {
     const skip = parseInt(req.query.start)
@@ -155,10 +156,10 @@ module.exports.getAdminList = async (req, res) => {
       order['createdAt'] = req.query.order[0].dir === 'asc' ? 1 : -1
     }
 
-    const data = await User.find({role:'admin',deleted:false,'full_name': { $regex: search, $options: 'i'  }}).skip(skip)
+    const data = await User.find({role:'admin',deleted:false,isActive:true,'full_name': { $regex: search, $options: 'i'  }}).skip(skip)
     .limit(limit).select('_id image full_name email access')
     .lean()
-    const totalCount = await User.countDocuments({role:'admin',deleted:false,'full_name': { $regex: search, $options: 'i'  }})
+    const totalCount = await User.countDocuments({role:'admin',deleted:false,isActive:true,'full_name': { $regex: search, $options: 'i'  }})
     for (var i = 0; i < data.length; i++) {
       data[i].nr = i + 1 + skip || 1 * limit
     }
@@ -168,6 +169,59 @@ module.exports.getAdminList = async (req, res) => {
       data,
     })
   } catch (e) {
+    console.log(e)
+  }
+}
+module.exports.editAdmin = async(req,res)=>{
+  try{
+    req.body.image = ''
+    if (req.file) {
+      const result = await uploadFile(req.file)
+        .then((result) => {
+          req.body.image = result.Key
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    }
+ let {full_name,email,password,access,image,bio,id} = req.body
+    if(!image){
+      image = 'blank.png'
+   }
+ const user = await User.findOneAndUpdate({_id:id,role:admin},{full_name,role:'admin',email,access,bio}) .then(async (user) => {
+  if (req.file) {
+    deleteImage(user.image)
+    user.image = image
+    await user.save()
+  }
+  if(password){
+    user.password = password
+    await user.save()
+  }
+})
+ res.send({status:'success',message:'added'})
+  }
+  catch(e){
+    if (req.file) {
+      deleteImage(req.body.image)
+    }
+    console.log(e)
+    const errors = handleErrors(e)
+      res.status(400).json({ errors })
+  }
+}
+module.exports.deleteAdmin=async(req,res)=>{
+  try{
+    const id = req.body.id
+    const user = await User.findOneAndUpdate({_id:id,role:'admin'},{isActive:false})
+    if(user){
+      res.send({status:'success',message:'User deleted'})
+    }
+    if(!user){
+      res.send({status:'fail',message:'Failed to delete user'})
+    }
+  }
+  catch(e){
     console.log(e)
   }
 }
