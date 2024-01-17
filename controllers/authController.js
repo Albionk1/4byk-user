@@ -71,16 +71,16 @@ module.exports.login = async (req, res) => {
         throw Error('access')
       }
     } catch (e) {
-      // console.log(e)
       const errors = handleErrors(e)
       res.status(400).json({ errors })
+      
     }
   }
 
 module.exports.addUser = async(req,res)=>{
   try{
- const {full_name,country,email,password,acount_type} = req.body
- const user = await User.create({full_name,role:'user',country,email,password,acount_type})
+ const {full_name,country,email,password,acount_type,bio} = req.body
+ const user = await User.create({full_name,role:'user',country,email,password,acount_type,bio})
  res.send({status:'success',message:'added'})
   }
   catch(e){
@@ -117,11 +117,18 @@ module.exports.addAdmin = async(req,res)=>{
           console.log(error)
         })
     }
- const {full_name,email,password,access} = req.body
- const user = await User.create({full_name,role:'admin',email,password,access,image})
+ let {full_name,email,password,access,image,bio} = req.body
+    if(!image){
+      image = 'blank.png'
+   }
+ const user = await User.create({full_name,role:'admin',email,password,access,image,bio})
  res.send({status:'success',message:'added'})
   }
   catch(e){
+    if (req.file) {
+      deleteImage(req.body.image)
+    }
+    console.log(e)
     const errors = handleErrors(e)
       res.status(400).json({ errors })
   }
@@ -135,5 +142,32 @@ module.exports.getUserById = async(req,res)=>{
   }
   catch(e){
    res.send('')
+  }
+}
+module.exports.getAdminList = async (req, res) => {
+  try {
+    const skip = parseInt(req.query.start)
+    const limit = parseInt(req.query.length)
+    const search = req.query.search.value
+    const order = {}
+
+    if (req.query.order[0].column === '0') {
+      order['createdAt'] = req.query.order[0].dir === 'asc' ? 1 : -1
+    }
+
+    const data = await User.find({role:'admin',deleted:false,'full_name': { $regex: search, $options: 'i'  }}).skip(skip)
+    .limit(limit).select('_id image full_name email access')
+    .lean()
+    const totalCount = await User.countDocuments({role:'admin',deleted:false,'full_name': { $regex: search, $options: 'i'  }})
+    for (var i = 0; i < data.length; i++) {
+      data[i].nr = i + 1 + skip || 1 * limit
+    }
+    res.json({
+      recordsTotal: totalCount ? totalCount : 0,
+      recordsFiltered: totalCount ? totalCount: 0,
+      data,
+    })
+  } catch (e) {
+    console.log(e)
   }
 }

@@ -4,6 +4,7 @@ const cookieParser = require('cookie-parser')
 const mongoose = require('mongoose')
 var bodyParser = require('body-parser')
 const cors = require('cors');
+const { uploadFile, getFileStream, deleteImage } = require('./aws')
 
 const authRouter = require('./routes/authRoutes')
 const authRouterMobile = require('./routes/mobileRoutes/authRoutesMobile')
@@ -36,7 +37,18 @@ app.use(express.static(path.join(__dirname, 'public')))
 
 
 
-
+app.get('/images/:key', (req, res) => {
+  const key = req.params.key
+  try {
+    try {
+      getFileStream(key, res)
+    } catch (error) {
+      console.log(error)
+    }
+  } catch (error) {
+    console.log(error)
+  }
+})
 
 app.use('/', authRouter)
 app.use('/api/v1/mobile/auth', authRouterMobile)

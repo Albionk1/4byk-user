@@ -45,4 +45,5 @@ router.post('/add-user',upload.single('image'),authController.addUser)
 router.post('/edit-user',upload.single('image'),authController.updateUser)
 router.post('/add-admin',upload.single('image'),authController.addAdmin)
 router.post('/get-user-id',authController.getUserById)
+router.get('/get-admin-list',authController.getAdminList)
 module.exports=router

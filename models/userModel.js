@@ -66,6 +66,9 @@ const userSchema = new mongoose.Schema(
     image: {
       type: String,
     },
+    bio: {
+      type: String,
+    },
     email: {
       type: String,
       unique: true,
@@ -102,7 +105,9 @@ const userSchema = new mongoose.Schema(
         values:countries,
         message: `State is invalid`,
       },
-      required: [true, 'State is required'],
+      required: [ function () {
+        return this.role !== 'admin' 
+      }, 'State is required'],
     },
     instagram_link: {
       type: String,
