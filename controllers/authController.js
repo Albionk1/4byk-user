@@ -71,7 +71,6 @@ module.exports.getUserById = async(req,res)=>{
 module.exports.login = async (req, res) => {
     try {  
     const { email, password } = req.body
-      console.log(email,password)
       const user = await User.login(email, password)
       if (user.isActive !== false) {
         const token = createToken(user._id)
@@ -138,7 +137,6 @@ module.exports.addAdmin = async(req,res)=>{
     if (req.file) {
       deleteImage(req.body.image)
     }
-    console.log(e)
     const errors = handleErrors(e)
       res.status(400).json({ errors })
   }
