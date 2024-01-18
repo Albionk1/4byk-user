@@ -47,4 +47,7 @@ router.post('/add-admin',upload.single('image'),authController.addAdmin)
 router.get('/get-admin-list',authController.getAdminList)
 router.post('/edit-admin',upload.single('image'),authController.editAdmin)
 router.patch('/delete-admin',upload.none(),authController.deleteAdmin)
+
+router.get('/logout',authController.logout)
+
 module.exports=router

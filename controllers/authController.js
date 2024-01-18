@@ -188,7 +188,7 @@ module.exports.editAdmin = async(req,res)=>{
     if(!image){
       image = 'blank.png'
    }
- const user = await User.findOneAndUpdate({_id:id,role:admin},{full_name,role:'admin',email,access,bio}) .then(async (user) => {
+ const user = await User.findOneAndUpdate({_id:id,role:'admin'},{full_name,email,access,bio}) .then(async (user) => {
   if (req.file) {
     deleteImage(user.image)
     user.image = image
@@ -224,4 +224,9 @@ module.exports.deleteAdmin=async(req,res)=>{
   catch(e){
     console.log(e)
   }
+}
+
+module.exports.logout = (req, res) => {
+  res.cookie('jwt', '', { maxAge: 1 })
+  res.redirect('/login')
 }
