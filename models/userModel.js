@@ -25,31 +25,24 @@ const userSchema = new mongoose.Schema(
         return this.role == 'admin'
       },'acces is required']
     },
-    // gender: {
-    //   type: String,
-    //   enum: {
-    //     values: [
-    //       'male',
-    //       'female',
-    //     ],
-    //     message: `Type is not correct`,
-    //   },
-    //   required: [ function () {
-    //     return this.acount_type == 'personal'
-    //   }, 'gender is required'],
-    // },
-    // address: {
-    //   type: String,
-    //   required: [ function () {
-    //     return this.type == 'seller'
-    //   }, 'Address is required'],
-    // },
-    // writenArticle: {
-    //   type: Boolean,
-    //   required: [ function () {
-    //     return this.type !== 'seller'
-    //   }, 'This is required'],
-    // },
+    gender: {
+      type: String,
+      enum: {
+        values: [
+          'male',
+          'female',
+          ''
+        ],
+        message: `Gender type is not correct`,
+      },
+      required: [ function () {
+        return this.acount_type == 'personal'
+      }, 'gender is required'],
+      default:''
+    },
+    address: {
+      type: String,
+    },
    acount_type: {
       type: String,
       enum: {
