@@ -88,8 +88,8 @@ module.exports.login = async (req, res) => {
 
 module.exports.addUser = async(req,res)=>{
   try{
- const {full_name,country,email,password,acount_type,bio} = req.body
- const user = await User.create({full_name,role:'user',country,email,password,acount_type,bio})
+ const {full_name,country,email,password,acount_type,bio,gender,category,language} = req.body
+ const user = await User.create({full_name,role:'user',country,email,password,acount_type,bio,gender,category,language})
  res.send({status:'success',message:'added'})
   }
   catch(e){
@@ -100,7 +100,7 @@ module.exports.addUser = async(req,res)=>{
 
 module.exports.updateUser = async(req,res)=>{
   try{
- const {full_name,country,email,password,acount_type,instagram_link,facebook_link,linkedIn_link,tiktok_link,id} = req.body
+ const {full_name,country,email,password,acount_type,instagram_link,facebook_link,linkedIn_link,tiktok_link,gender,category,id} = req.body
  const user = await User.findByIdAndUpdate({full_name,role:'user',country,email,acount_type,instagram_link,facebook_link,linkedIn_link,tiktok_link})
  if(password){
   user.password=password

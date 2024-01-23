@@ -102,6 +102,26 @@ const userSchema = new mongoose.Schema(
         return this.role !== 'admin' 
       }, 'State is required'],
     },
+    category: {
+      type: String,
+      enum: {
+        values:['bloger','influencer','personal','other'],
+        message: `Category is invalid`,
+      },
+      required: [ function () {
+        return this.role !== 'admin' 
+      }, 'Category is required'],
+    },
+    language: {
+      type: String,
+      enum: {
+        values:['al','en','de',],
+        message: `Language is invalid`,
+      },
+      required: [ function () {
+        return this.role !== 'admin' 
+      }, 'Language is required'],
+    },
     instagram_link: {
       type: String,
     },
