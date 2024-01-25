@@ -122,6 +122,9 @@ const userSchema = new mongoose.Schema(
         return this.role !== 'admin' 
       }, 'Language is required'],
     },
+    phone_number: {
+      type: String,
+    },
     instagram_link: {
       type: String,
     },

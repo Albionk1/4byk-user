@@ -88,8 +88,18 @@ module.exports.login = async (req, res) => {
 
 module.exports.addUser = async(req,res)=>{
   try{
- const {full_name,country,email,password,acount_type,bio,gender,category,language} = req.body
- const user = await User.create({full_name,role:'user',country,email,password,acount_type,bio,gender,category,language})
+    if (req.file) {
+    req.body.image = ''
+      const result = await uploadFile(req.file)
+        .then((result) => {
+          req.body.image = result.Key
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    }
+ const {full_name,country,email,password,acount_type,bio,gender,category,language,image} = req.body
+ const user = await User.create({full_name,role:'user',country,email,password,acount_type,bio,gender,category,language,image})
  res.send({status:'success',message:'added'})
   }
   catch(e){
@@ -100,8 +110,8 @@ module.exports.addUser = async(req,res)=>{
 
 module.exports.updateUser = async(req,res)=>{
   try{
- const {full_name,country,email,password,acount_type,instagram_link,facebook_link,linkedIn_link,tiktok_link,gender,category,id} = req.body
- const user = await User.findByIdAndUpdate({full_name,role:'user',country,email,acount_type,instagram_link,facebook_link,linkedIn_link,tiktok_link})
+ const {full_name,country,email,password,acount_type,instagram_link,facebook_link,linkedIn_link,tiktok_link,gender,category,bio,phone_number,address} = req.body
+ const user = await User.findByIdAndUpdate(req.user._id,{full_name,country,email,acount_type,instagram_link,facebook_link,linkedIn_link,tiktok_link,gender,category,bio,phone_number,address})
  if(password){
   user.password=password
   await user.save()
@@ -109,6 +119,7 @@ module.exports.updateUser = async(req,res)=>{
  res.send({status:'success',message:'updated'})
   }
   catch(e){
+    console.log(e)
     const errors = handleErrors(e)
       res.status(400).json({ errors })
   }
