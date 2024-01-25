@@ -41,7 +41,7 @@ const routeLimiter = rateLimit({
   const router = express.Router();
 router.post('/get-user-id',authController.getUserById)
 router.post('/login',upload.none(),authController.login)
-router.post('/add-user',upload.none(),authController.addUser)
+router.post('/add-user',upload.single('image'),authController.addUser)
 router.post('/edit-user',upload.single('image'),requireAuth,authController.updateUser)
 router.post('/add-admin',upload.single('image'),authController.addAdmin)
 router.get('/get-admin-list',authController.getAdminList)
