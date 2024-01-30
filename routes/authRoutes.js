@@ -43,6 +43,9 @@ router.post('/get-user-id',authController.getUserById)
 router.post('/login',upload.none(),authController.login)
 router.post('/add-user',upload.single('image'),authController.addUser)
 router.post('/edit-user',upload.single('image'),requireAuth,authController.updateUser)
+router.post('/edit-profile-pic',upload.single('image'),requireAuth,authController.editProfilePic)
+
+//admin
 router.post('/add-admin',upload.single('image'),authController.addAdmin)
 router.get('/get-admin-list',authController.getAdminList)
 router.post('/edit-admin',upload.single('image'),authController.editAdmin)

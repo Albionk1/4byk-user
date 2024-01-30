@@ -125,6 +125,29 @@ module.exports.updateUser = async(req,res)=>{
   }
 }
 
+module.exports.editProfilePic=async(req,res)=>{
+  try{
+    if (req.file) {
+      req.body.image = ''
+        const result = await uploadFile(req.file)
+          .then((result) => {
+            req.body.image = result.Key
+          })
+          .catch((error) => {
+            console.log(error)
+          })
+      }
+      const user = await User.findById(req.user._id)
+      deleteImage(user.image)
+       user.image = req.body.image
+       await user.save()
+    res.send({status:'success',message:'Image updated'})
+  }
+  catch(e){
+   res.send({status:'fail',message:"Image didn't updated"})
+  }
+}
+
 module.exports.addAdmin = async(req,res)=>{
   try{
     req.body.image = ''
