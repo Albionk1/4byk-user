@@ -64,7 +64,7 @@ module.exports.login = async (req, res) => {
       if (user.isActive !== false) {
         const token = createToken(user._id)
         res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 })
-        res.send({ data: { user },cookie:token })
+        res.send({ data: { user },token})
       } else {
         throw Error('access')
       }
@@ -75,17 +75,27 @@ module.exports.login = async (req, res) => {
     }
   }
 
-module.exports.addUser = async(req,res)=>{
-  try{
- const {full_name,country,email,password,acount_type} = req.body
- const user = await User.create({full_name,role:'user',country,email,password,acount_type})
- res.send({status:'success',message:'added'})
+  module.exports.addUser = async(req,res)=>{
+    try{
+      if (req.file) {
+      req.body.image = ''
+        const result = await uploadFile(req.file)
+          .then((result) => {
+            req.body.image = result.Key
+          })
+          .catch((error) => {
+            console.log(error)
+          })
+      }
+   const {full_name,country,email,password,acount_type,bio,gender,category,language,image} = req.body
+   const user = await User.create({full_name,role:'user',country,email,password,acount_type,bio,gender,category,language,image})
+   res.send({status:'success',message:'added'})
+    }
+    catch(e){
+      const errors = handleErrors(e)
+        res.status(400).json({ errors })
+    }
   }
-  catch(e){
-    const errors = handleErrors(e)
-      res.status(400).json({ errors })
-  }
-}
 
 module.exports.updateUser = async(req,res)=>{
   try{
