@@ -41,4 +41,7 @@ const routeLimiter = rateLimit({
   const router = express.Router();
   
 router.post('/login',authController.login)
+router.post('/add-user',upload.single('image'),authController.addUser)
+
+
 module.exports=router
