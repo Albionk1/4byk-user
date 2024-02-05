@@ -58,6 +58,18 @@ const handleErrors = (err) => {
   }
   return errors
 }
+
+
+module.exports.getUserImageById=async(req,res)=>{
+  try{
+  const ids=req.body.ids
+  const userImges = await User.find({_ids:{$in:ids}}).select('image')
+  res.send(userImges)
+ }
+ catch(e){
+  res.send([])
+ }
+}
 module.exports.getUserById = async(req,res)=>{
   try{
      const id = req.body.id
