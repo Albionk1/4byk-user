@@ -70,6 +70,21 @@ module.exports.getUserImageById=async(req,res)=>{
   res.send([])
  }
 }
+module.exports.getUsersFilter=async(req,res)=>{
+  try{
+  const filter = req.body.filter
+  const select = req.body.select
+  const skip = parseInt(req.body.skip)
+  const limit = parseInt(req.body.limit)
+  const data= await User.find(filter).select(select).skip(skip)
+  .limit(limit).lean()
+  let totalCount = await User.countDocuments(filter)
+  res.send([data,totalCount])
+ }
+ catch(e){
+  res.send([[],0])
+ }
+}
 module.exports.getUserById = async(req,res)=>{
   try{
      const id = req.body.id

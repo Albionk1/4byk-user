@@ -40,6 +40,7 @@ const routeLimiter = rateLimit({
     })
   const router = express.Router();
 router.post('/get-user-image-by-id',authController.getUserImageById)
+router.post('/get-users-filter',authController.getUsersFilter)
 router.post('/get-user-id',authController.getUserById)
 router.post('/login',upload.none(),authController.login)
 router.post('/add-user',upload.single('image'),authController.addUser)
