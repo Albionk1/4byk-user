@@ -1,6 +1,6 @@
 const express = require('express');
 const authController = require('../controllers/authController')
-const { requireAuth, authRole, checkUser, checkLogin } = require('../middlewares/authMiddleware')
+const { requireAuth, authRole, checkUser, checkLogin,accessStaff } = require('../middlewares/authMiddleware')
 const path = require('path');
 const multer = require('multer')
 const rateLimit = require("express-rate-limit");
@@ -46,13 +46,16 @@ router.post('/login',upload.none(),authController.login)
 router.post('/add-user',upload.single('image'),authController.addUser)
 router.post('/edit-user',upload.single('image'),requireAuth,authController.updateUser)
 router.post('/edit-profile-pic',upload.single('image'),requireAuth,authController.editProfilePic)
+router.patch('/delete-user',upload.none(),requireAuth,accessStaff('u-list'),authController.deleteUser)
 
 //admin
 router.post('/add-admin',upload.single('image'),authController.addAdmin)
 router.get('/get-admin-list',authController.getAdminList)
 router.post('/edit-admin',upload.single('image'),authController.editAdmin)
 router.patch('/delete-admin',upload.none(),authController.deleteAdmin)
-
+//user tabke
+router.get('/get-user-individ-table',requireAuth,authController.getUserIndividTable)
+router.get('/get-user-business-table',requireAuth,authController.getUserBusinessTable)
 router.get('/logout',authController.logout)
 
 module.exports=router

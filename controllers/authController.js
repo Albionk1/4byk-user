@@ -174,7 +174,16 @@ module.exports.editProfilePic=async(req,res)=>{
    res.send({status:'fail',message:"Image didn't updated"})
   }
 }
+module.exports.deleteUser=async(req,res)=>{
+  try{
+    const user = await User.findByIdAndUpdate(req.body.id,{deleted:true,isActive:false})
+   res.send({status:'success',message:'User deleted successfuly'})
+  }
+  catch(e){
 
+   res.send({status:'fail',message:"not delited"})
+  }
+}
 module.exports.addAdmin = async(req,res)=>{
   try{
     req.body.image = ''
@@ -281,6 +290,62 @@ module.exports.deleteAdmin=async(req,res)=>{
     }
   }
   catch(e){
+    console.log(e)
+  }
+}
+
+module.exports.getUserIndividTable = async (req, res) => {
+  try {
+    const skip = parseInt(req.query.start)
+    const limit = parseInt(req.query.length)
+    const search = req.query.search.value
+    const order = {}
+
+    if (req.query.order[0].column === '0') {
+      order['createdAt'] = req.query.order[0].dir === 'asc' ? 1 : -1
+    }
+
+    const data = await User.find({role:'user',deleted:false,isActive:true,'full_name': { $regex: search, $options: 'i'  },acount_type:'personal'}).skip(skip)
+    .limit(limit).select('_id image full_name email category bio createdAt country')
+    .lean()
+    const totalCount = await User.countDocuments({role:'user',deleted:false,isActive:true,'full_name': { $regex: search, $options: 'i'  },acount_type:'personal'})
+    for (var i = 0; i < data.length; i++) {
+      data[i].nr = i + 1 + skip || 1 * limit
+    }
+    res.json({
+      recordsTotal: totalCount ? totalCount : 0,
+      recordsFiltered: totalCount ? totalCount: 0,
+      data,
+    })
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+module.exports.getUserBusinessTable = async (req, res) => {
+  try {
+    const skip = parseInt(req.query.start)
+    const limit = parseInt(req.query.length)
+    const search = req.query.search.value
+    const order = {}
+
+    if (req.query.order[0].column === '0') {
+      order['createdAt'] = req.query.order[0].dir === 'asc' ? 1 : -1
+    }
+
+    const data = await User.find({role:'user',deleted:false,isActive:true,'full_name': { $regex: search, $options: 'i'  },acount_type:'business'}).skip(skip)
+    .limit(limit).select('_id image full_name email category bio createdAt country')
+    .lean()
+    const totalCount = await User.countDocuments({role:'user',deleted:false,isActive:true,'full_name': { $regex: search, $options: 'i'  },acount_type:'business'})
+    for (var i = 0; i < data.length; i++) {
+      data[i].nr = i + 1 + skip || 1 * limit
+    }
+    res.json({
+      recordsTotal: totalCount ? totalCount : 0,
+      recordsFiltered: totalCount ? totalCount: 0,
+      data,
+    })
+  } catch (e) {
     console.log(e)
   }
 }
