@@ -8,6 +8,7 @@ const { uploadFile, getFileStream, deleteImage } = require('./aws')
 
 const authRouter = require('./routes/authRoutes')
 const authRouterMobile = require('./routes/mobileRoutes/authRoutesMobile')
+const messageRouter = require('./routes/messageRoutes')
 
 
 
@@ -21,8 +22,17 @@ process.on('uncaughtException', function (err) {
   // Do something to handle the error
 });
 
+const http = require('http')
+const socketio = require('socket.io')
 
 const app = express()
+const server = http.createServer(app)
+const io = socketio(server, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"]
+  }
+});
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }))
 // app.use(bodyParser.json('application/json'))
@@ -32,9 +42,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
 app.use(express.json())
 app.use(express.static(path.join(__dirname, 'public')))
-
-
-
+const { addUser, removeUser, getUser, editRoom } = require('./utils')
 
 
 app.get('/images/:key', (req, res) => {
@@ -52,6 +60,7 @@ app.get('/images/:key', (req, res) => {
 
 app.use('/', authRouter)
 app.use('/api/v1/mobile/auth', authRouterMobile)
+app.use('/api/v1/message', messageRouter)
 
 
 //app.use('/', clientRouter)
@@ -65,6 +74,59 @@ app.use('/api/v1/mobile/auth', authRouterMobile)
 mongoose.connect(process.env.DATABASE, { useNewUrlParser: true })
 const db = mongoose.connection
 db.on('error', console.error.bind(console, 'connection error:'))
-app.listen(process.env.PORT, () => {
+
+io.on('connection', (socket) => { 
+  socket.on('join', ({ myId, client }) => { 
+  console.log('socketttttttt',myId)
+    removeUser(socket.id)
+    const user = addUser({ id: socket.id, userId: myId, client })
+    socket.join(user.userId)
+    if (client) {
+      socket.join(client)
+    }
+  })
+  socket.on('joinRoom', ({ myId, otherUserId }) => {
+    
+    // Concatenate the user IDs in a consistent order
+    const roomId = [myId, otherUserId].join('')
+    const userOnSocket = getUser(myId) 
+    if (userOnSocket) {
+      socket.leave(userOnSocket.room)
+      const user = editRoom({ userId: myId, room: roomId })
+      socket.join(roomId)
+    }
+  })
+  socket.on('leaveRoom', ({ userId }) => {
+    // Concatenate the user IDs in a consistent order 
+    const userOnSocket = getUser(userId)
+    if (userOnSocket) {
+      socket.leave(userOnSocket.room)
+      const user = editRoom({ userId, room: ''}) 
+ 
+    }
+  })
+  socket.on('messageSend', async({ userId,myId, message }) => { 
+    const user = getUser(userId) 
+    if (user) { 
+      if (user.room==[userId,myId.toString()].join('')) {
+       return io.to(user.userId).emit('reciveMessageRoom', { recivemessage: message })
+      }
+      if (!user.room && user.userId) {
+        io.to(user.userId).emit('reciveMessage', {myId:myId.toString(), message })
+      }
+    }
+    else{ 
+      const userToken = await User.findById(userId).select('fcm_token')
+      if(userToken){
+        sendMessage("Hejposta", message,userToken.fcm_token);
+      }    
+    }
+  })
+  socket.on('disconnect', () => {
+    removeUser(socket.id)
+  })
+})
+
+server.listen(process.env.PORT, () => {
     console.log(`App running on port ${process.env.PORT}...`);
 });
