@@ -117,7 +117,7 @@ module.exports.updateUser = async(req,res)=>{
 module.exports.getUserById = async(req,res)=>{
   try{
      const id = req.body.id
-     const user = await User.findById(id)
+     const user = await User.findById(id).select('-password -createdAt -updatedAt')
      res.send(user)
   }
   catch(e){
