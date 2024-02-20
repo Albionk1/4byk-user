@@ -42,6 +42,6 @@ const routeLimiter = rateLimit({
   
 router.post('/login',authController.login)
 router.post('/add-user',upload.single('image'),authController.addUser)
-
+router.post('/get-user-id',authController.getUserById)
 
 module.exports=router

@@ -112,3 +112,15 @@ module.exports.updateUser = async(req,res)=>{
       res.status(400).json({ errors })
   }
 }
+
+
+module.exports.getUserById = async(req,res)=>{
+  try{
+     const id = req.body.id
+     const user = await User.findById(id)
+     res.send(user)
+  }
+  catch(e){
+   res.send('')
+  }
+}
