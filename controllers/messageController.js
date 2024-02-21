@@ -29,7 +29,6 @@ const handleErrors = (err) => {
          if(user.room==[to, by].join('')){
             obj.status='seen'
          }
-         
        }
     const send = await Message.create(obj)
     res.send(send)
@@ -65,12 +64,12 @@ const handleErrors = (err) => {
  }
  module.exports.getMessageNotification=async(req,res)=>{
    try{
-      Message.aggregate([
+     const message= await  Message.aggregate([
          // Match messages that meet your criteria
          {
            $match: {
              status: "delivered",
-             to: mongoose.Types.ObjectId(req.user._id),
+             to: new mongoose.Types.ObjectId(req.user._id),
            }
          }, {
            $sort: {
@@ -106,16 +105,8 @@ const handleErrors = (err) => {
              image: { $arrayElemAt: ["$user.image", 0] }
            }
          }
-       ], (err, result) => {
-         if (err) {
-           // handle error
-           console.error(err);
-           return;
-         }
-       
-         // handle result
-         res.send(result);
-       });
+       ]);
+       res.send(message)
    }
    catch(e){
       console.log(e)
@@ -126,12 +117,12 @@ const handleErrors = (err) => {
 
  module.exports.getMessageNotificationCount=async(req,res)=>{
    try{
-      Message.aggregate([
+     const message=await Message.aggregate([
          // Match messages that meet your criteria
          {
            $match: {
              status: "delivered",
-             to: mongoose.Types.ObjectId(req.user._id), // replace with the ObjectId of the user you're querying for
+             to: new mongoose.Types.ObjectId(req.user._id), // replace with the ObjectId of the user you're querying for
            }
          },
          // Group messages by the "by" and "to" fields and create a set of unique values for each group
@@ -145,16 +136,8 @@ const handleErrors = (err) => {
          {
            $count: "count"
          }
-       ], (err, result) => {
-         if (err) {
-           // handle error
-           console.error(err);
-           return;
-         }
-       
-         // handle result
-         res.send(result);
-       });
+       ]);
+       res.send(message)
    }
    catch(e){
       console.log(e)
@@ -165,11 +148,11 @@ const handleErrors = (err) => {
 
  module.exports.getLatestMessage=async(req,res)=>{
   try{
-    Message.aggregate([
+  const message = await  Message.aggregate([
       // Match messages that meet your criteria
       {
         $match: {
-          to: mongoose.Types.ObjectId(req.user._id),
+          to: new mongoose.Types.ObjectId(req.user._id),
         }
       }, {
         $sort: {
@@ -207,16 +190,8 @@ const handleErrors = (err) => {
           image: { $arrayElemAt: ["$user.image", 0] }
         }
       }
-    ], (err, result) => {
-      if (err) {
-        // handle error
-        console.error(err);
-        return;
-      }
-    
-      // handle result
-      res.send(result);
-    });
+    ]);
+    res.send(message)
   }
   catch(e){
     const errors = handleErrors(e)
