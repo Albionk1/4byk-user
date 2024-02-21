@@ -9,7 +9,7 @@ const { uploadFile, getFileStream, deleteImage } = require('./aws')
 const authRouter = require('./routes/authRoutes')
 const authRouterMobile = require('./routes/mobileRoutes/authRoutesMobile')
 const messageRouter = require('./routes/messageRoutes')
-
+const User = require('./models/userModel')
 
 
 const dotenv = require('dotenv');
@@ -77,7 +77,6 @@ db.on('error', console.error.bind(console, 'connection error:'))
 
 io.on('connection', (socket) => { 
   socket.on('join', ({ myId, client }) => { 
-  console.log('socketttttttt',myId)
     removeUser(socket.id)
     const user = addUser({ id: socket.id, userId: myId, client })
     socket.join(user.userId)
@@ -115,12 +114,12 @@ io.on('connection', (socket) => {
         io.to(user.userId).emit('reciveMessage', {myId:myId.toString(), message })
       }
     }
-    else{ 
-      const userToken = await User.findById(userId).select('fcm_token')
-      if(userToken){
-        sendMessage("Hejposta", message,userToken.fcm_token);
-      }    
-    }
+    // else{ 
+    //   const userToken = await User.findById(userId).select('fcm_token')
+    //   if(userToken){
+    //     sendMessage("Hejposta", message,userToken.fcm_token);
+    //   }    
+    // }
   })
   socket.on('disconnect', () => {
     removeUser(socket.id)

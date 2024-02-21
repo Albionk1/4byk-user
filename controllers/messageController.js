@@ -34,6 +34,7 @@ const handleErrors = (err) => {
     res.send(send)
    }
    catch(e){
+    console.log(e)
       const errors = handleErrors(e)
       res.send({errors})
    }
