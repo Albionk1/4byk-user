@@ -39,6 +39,26 @@ const handleErrors = (err) => {
       res.send({errors})
    }
  }
+ module.exports.sendOffert=async(req,res)=>{
+  try{
+     const {to,message,offert_ref,title,image,price} =req.body
+     let by = req.user._id
+     const obj={by,to,message,offert_ref,title,image,price,offert:true}
+     const user=getUser(to.toString())
+     if (user) {
+        if(user.room==[to, by].join('')){
+           obj.status='seen'
+        }
+      }
+   const send = await Message.create(obj)
+   res.send({status:'success',send})
+  }
+  catch(e){
+   console.log(e)
+     const errors = handleErrors(e)
+     res.send({errors})
+  }
+}
  module.exports.getMessage=async(req,res)=>{
    try{
       const {by,to} =req.body

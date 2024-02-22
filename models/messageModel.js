@@ -11,6 +11,23 @@ const messageSchema = new mongoose.Schema(
       required: [true, 'Klienti duhet ti takoj një user'],
       ref: 'User',
     },
+    offert:{
+      type:Boolean,
+      default:false
+    },
+    title:{
+      type:String
+    },
+    image:{
+      type:String
+    },
+    price:{
+      type:String
+    },
+    offert_ref:{
+      type: mongoose.Schema.ObjectId,
+      ref:'Product'
+    },
     message:{
       type:String
     },

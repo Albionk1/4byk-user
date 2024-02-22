@@ -108,10 +108,27 @@ io.on('connection', (socket) => {
     const user = getUser(userId) 
     if (user) { 
       if (user.room==[userId,myId.toString()].join('')) {
-       return io.to(user.userId).emit('reciveMessageRoom', { recivemessage: message })
+       return io.to(user.userId).emit('reciveMessageRoom', { recivemessage: message,offert:false})
       }
       if (!user.room && user.userId) {
-        io.to(user.userId).emit('reciveMessage', {myId:myId.toString(), message })
+        io.to(user.userId).emit('reciveMessage', {myId:myId.toString(), message,offert:false })
+      }
+    }
+    // else{ 
+    //   const userToken = await User.findById(userId).select('fcm_token')
+    //   if(userToken){
+    //     sendMessage("Hejposta", message,userToken.fcm_token);
+    //   }    
+    // }
+  })
+  socket.on('offertSend', async({ userId,myId, message,price,title,image }) => { 
+    const user = getUser(userId) 
+    if (user) { 
+      if (user.room==[userId,myId.toString()].join('')) {
+       return io.to(user.userId).emit('reciveOffertMessageRoom', { recivemessage: message,offert:true,price,title,image})
+      }
+      if (!user.room && user.userId) {
+        io.to(user.userId).emit('reciveMessage', {myId:myId.toString(), message,offert:true,price,title,image })
       }
     }
     // else{ 

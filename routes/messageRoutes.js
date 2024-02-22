@@ -43,6 +43,7 @@ const routeLimiter = rateLimit({
       limits: { fileSize: 5000000 },
     })
 router.post('/send-message',requireAuth,upload.none(),messageController.sendMessage)
+router.post('/send-offert',requireAuth,upload.none(),messageController.sendOffert)
 router.post('/get-message',requireAuth,upload.none(),messageController.getMessage)
 router.post('/get-message-notification',requireAuth,upload.none(),messageController.getMessageNotification)
 router.post('/get-message-notification-count',requireAuth,upload.none(),messageController.getMessageNotificationCount)
