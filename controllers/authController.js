@@ -367,7 +367,29 @@ module.exports.follow = async(req,res)=>{
     res.send({status:'fail'})
   }
 }
+module.exports.getMyFollowing = async(req,res)=>{
+  try{
+    let pageNumber = parseInt(req.body.pageNumber)|| 0
+    const followers = await Follow.find({userId:req.user._id}).skip(pageNumber).limit(10)
+    const totalFollowers = await Follow.countDocuments({userId:req.user._id})
+    res.send({status:'success',followers,totalFollowers})
+  }
+  catch(e){
+    res.send({status:'fail',followers:0,totalFollowers:0})
+  }
+}
 
+module.exports.getMyFollowers = async(req,res)=>{
+  try{
+    let pageNumber = parseInt(req.body.pageNumber)|| 0
+    const followers = await Follow.find({friendId:req.user._id}).skip(pageNumber).limit(10)
+    const totalFollowers = await Follow.countDocuments({friendId:req.user._id})
+    res.send({status:'success',followers,totalFollowers})
+  }
+  catch(e){
+    res.send({status:'fail',followers:0,totalFollowers:0})
+  }
+}
 module.exports.logout = (req, res) => {
   res.cookie('jwt', '', { maxAge: 1 })
   res.redirect('/login')
