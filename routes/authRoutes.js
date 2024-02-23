@@ -56,6 +56,12 @@ router.patch('/delete-admin',upload.none(),authController.deleteAdmin)
 //user tabke
 router.get('/get-user-individ-table',requireAuth,authController.getUserIndividTable)
 router.get('/get-user-business-table',requireAuth,authController.getUserBusinessTable)
+
+//follow routes
+router.post('/follow',requireAuth,upload.none(),authController.follow)
+
+
+//logout
 router.get('/logout',authController.logout)
 
 module.exports=router

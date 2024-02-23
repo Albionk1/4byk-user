@@ -7,6 +7,7 @@ const createToken = (id) => {
     expiresIn: maxAge,
   })
 }
+const Follow = require('../models/followModel')
 // const { uploadFile, getFileStream, deleteImage } = require('../aws')
 const { uploadFile, getFileStream, deleteImage } = require('../aws')
 
@@ -347,6 +348,23 @@ module.exports.getUserBusinessTable = async (req, res) => {
     })
   } catch (e) {
     console.log(e)
+  }
+}
+
+module.exports.follow = async(req,res)=>{
+  try{
+    const follow = await Follow.findOne({userId:req.user._id,friendId:req.body.friend})
+    if(follow){
+      await follow.deleteOne()
+      return res.send({status:'success',message:'removed'})
+    }
+    else{
+      await Follow.create({userId:req.user._id,friendId:req.body.friend})
+      return res.send({status:'success',message:'added'})
+    }
+  }
+  catch(e){
+    res.send({status:'fail'})
   }
 }
 
