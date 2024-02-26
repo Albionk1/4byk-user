@@ -364,6 +364,7 @@ module.exports.follow = async(req,res)=>{
     }
   }
   catch(e){
+    console.log(e)
     res.send({status:'fail'})
   }
 }
