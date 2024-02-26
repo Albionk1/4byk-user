@@ -370,11 +370,12 @@ module.exports.follow = async(req,res)=>{
 module.exports.getMyFollowing = async(req,res)=>{
   try{
     let pageNumber = parseInt(req.body.pageNumber)|| 0
-    const followers = await Follow.find({userId:req.user._id}).skip(pageNumber).limit(10)
-    const totalFollowers = await Follow.countDocuments({userId:req.user._id})
+    const followers = await Follow.find({userId:req.body.user}).skip(pageNumber).limit(10)
+    const totalFollowers = await Follow.countDocuments({userId:req.body.user})
     res.send({status:'success',followers,totalFollowers})
   }
   catch(e){
+    console.log(e)
     res.send({status:'fail',followers:0,totalFollowers:0})
   }
 }
@@ -382,8 +383,8 @@ module.exports.getMyFollowing = async(req,res)=>{
 module.exports.getMyFollowers = async(req,res)=>{
   try{
     let pageNumber = parseInt(req.body.pageNumber)|| 0
-    const followers = await Follow.find({friendId:req.user._id}).skip(pageNumber).limit(10)
-    const totalFollowers = await Follow.countDocuments({friendId:req.user._id})
+    const followers = await Follow.find({friendId:req.body.user}).skip(pageNumber).limit(10)
+    const totalFollowers = await Follow.countDocuments({friendId:req.body.user})
     res.send({status:'success',followers,totalFollowers})
   }
   catch(e){

@@ -59,8 +59,8 @@ router.get('/get-user-business-table',requireAuth,authController.getUserBusiness
 
 //follow routes
 router.post('/follow',requireAuth,upload.none(),authController.follow)
-router.post('/get-my-following',requireAuth,upload.none(),authController.getMyFollowing)
-router.post('/get-my-followers',requireAuth,upload.none(),authController.getMyFollowers)
+router.post('/get-my-following',authController.getMyFollowing)
+router.post('/get-my-followers',authController.getMyFollowers)
 
 
 
