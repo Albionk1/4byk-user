@@ -367,15 +367,30 @@ module.exports.follow = async(req,res)=>{
     res.send({status:'fail'})
   }
 }
+
+module.exports.getFollowStatus = async(req,res)=>{
+  try{
+    let followingStatus = false
+    let followerStatus = false
+    const following = await Follow.countDocuments({userId:req.body.user,friendId:req.body.friend})
+    const follower = await Follow.countDocuments({friendId:req.body.user,userId:req.body.friend})
+    if(following) followingStatus =true
+    if(follower) followerStatus =true
+    res.send({status:'success',followingStatus,followerStatus})
+  }
+  catch(e){
+    res.send({status:'fail',followingStatus:false,followerStatus:false})
+  }
+}
+
 module.exports.getMyFollowing = async(req,res)=>{
   try{
     let pageNumber = parseInt(req.body.pageNumber)|| 0
-    const followers = await Follow.find({userId:req.body.user}).skip(pageNumber).limit(10)
+    const following = await Follow.find({userId:req.body.user}).skip(pageNumber).limit(10)
     const totalFollowers = await Follow.countDocuments({userId:req.body.user})
-    res.send({status:'success',followers,totalFollowers})
+    res.send({status:'success',following,totalFollowers})
   }
   catch(e){
-    console.log(e)
     res.send({status:'fail',followers:0,totalFollowers:0})
   }
 }
