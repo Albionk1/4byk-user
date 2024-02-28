@@ -407,6 +407,16 @@ module.exports.getMyFollowers = async(req,res)=>{
     res.send({status:'fail',followers:0,totalFollowers:0})
   }
 }
+module.exports.getAllMyFollowing = async(req,res)=>{
+  try{
+    const following = await Follow.find({userId:req.body.user}).select('_id')
+    res.send(following)
+  }
+  catch(e){
+    res.send([])
+  }
+}
+
 module.exports.logout = (req, res) => {
   res.cookie('jwt', '', { maxAge: 1 })
   res.redirect('/login')
