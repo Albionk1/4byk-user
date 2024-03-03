@@ -8,6 +8,7 @@ const createToken = (id) => {
   })
 }
 const Follow = require('../models/followModel')
+const Notification = require('../models/notificationModel')
 // const { uploadFile, getFileStream, deleteImage } = require('../aws')
 const { uploadFile, getFileStream, deleteImage } = require('../aws')
 
@@ -414,6 +415,43 @@ module.exports.getAllMyFollowing = async(req,res)=>{
   }
   catch(e){
     res.send([])
+  }
+}
+
+module.exports.addNotification = async(req,res)=>{
+  try{
+    const {by,to,message,from,status,url} = req.body
+      const notification = await Notification.create({by,to,message,from,status,url})
+      const user = await User.findById(by).select('full_name')
+      req.sendSocketMessage('notification', {user:{name:user.full_name,id:user._id},message,from,url})
+      res.send({status:'success',message:'Notification sent'})
+      
+  }
+  catch(e){
+    res.send({status:'fail',message:'Something went wrong'})
+
+  }
+}
+
+module.exports.deleteAllNotification = async(req,res)=>{
+  try{
+    const {id} = req.body
+    const notifications = await Notification.deleteMany({to:id})
+      res.send({status:'success',message:'Deleted all notifications'})
+  }
+  catch(e){
+    res.send({status:'fail',message:'Something went wrong'})
+  }
+}
+
+module.exports.getNotifications=async(req,res)=>{
+  try{
+     const {id,page}=req.params
+    const notifications = await Notification.find({to:id}).skip(parseInt(page)*5).limit(5)
+    res.send(notifications)
+  }
+  catch(e){
+    res.send({status:'fail',message:'Something went wrong'})
   }
 }
 

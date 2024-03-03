@@ -33,6 +33,7 @@ const io = socketio(server, {
     methods: ["GET", "POST"]
   }
 });
+const socketMiddleware = require('./middlewares/socketMiddleware')
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }))
 // app.use(bodyParser.json('application/json'))
@@ -76,6 +77,7 @@ const db = mongoose.connection
 db.on('error', console.error.bind(console, 'connection error:'))
 
 io.on('connection', (socket) => { 
+app.use(socketMiddleware(socket))
   socket.on('join', ({ myId, client }) => { 
     removeUser(socket.id)
     const user = addUser({ id: socket.id, userId: myId, client })

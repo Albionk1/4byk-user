@@ -63,9 +63,10 @@ router.post('/get-follow-status',authController.getFollowStatus)
 router.post('/get-my-following',authController.getMyFollowing)
 router.post('/get-my-followers',authController.getMyFollowers)
 router.post('/get-all-my-following',authController.getAllMyFollowing)
-
-
-
+//notification 
+router.post('/add-notification',authController.addNotification)
+router.delete('/delete-all-notification',authController.deleteAllNotification)
+router.get('/get-notifications',requireAuth,authController.getNotifications)
 
 //logout
 router.get('/logout',authController.logout)
