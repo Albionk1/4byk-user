@@ -28,12 +28,22 @@ const socketio = require('socket.io')
 
 const app = express()
 const server = http.createServer(app)
-const io = socketio(server, {
+let io
+if(process.env.NODE_ENV==='development'){
+  io=socketio(server, {
+    cors: {
+      origin: "http://localhost:3000",
+      methods: ["GET", "POST"]
+    }
+  });
+}else{
+io=socketio(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "https://four-buyk-1d9588e95312.herokuapp.com",
     methods: ["GET", "POST"]
   }
 });
+}
 const socketMiddleware = require('./middlewares/socketMiddleware')
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }))
