@@ -9,6 +9,7 @@ const { uploadFile, getFileStream, deleteImage } = require('./aws')
 const authRouter = require('./routes/authRoutes')
 const authRouterMobile = require('./routes/mobileRoutes/authRoutesMobile')
 const messageRouter = require('./routes/messageRoutes')
+const notificationRouter = require('./routes/notificationRoutes')
 const User = require('./models/userModel')
 
 
@@ -62,7 +63,7 @@ app.get('/images/:key', (req, res) => {
 app.use('/', authRouter)
 app.use('/api/v1/mobile/auth', authRouterMobile)
 app.use('/message', messageRouter)
-app.use('/notification', messageRouter)
+app.use('/notification', notificationRouter)
 
 
 //app.use('/', clientRouter)

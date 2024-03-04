@@ -48,8 +48,9 @@ module.exports.deleteAllNotification = async(req,res)=>{
 
 module.exports.getNotifications=async(req,res)=>{
   try{
-     const {id,page}=req.params
-    const notifications = await Notification.find({to:id}).skip(parseInt(page)*5).limit(5)
+     const {page}=req.params
+    const notifications = await Notification.find({to:req.user._id}).skip(parseInt(page)*5).limit(5)
+    console.log(notifications)
     res.send(notifications)
   }
   catch(e){
@@ -60,9 +61,10 @@ module.exports.getNotifications=async(req,res)=>{
 module.exports.getNotificationsCount=async(req,res)=>{
   try{
     const notifications = await Notification.countDocuments({to:req.user._id})
-    res.send({status:success,admin_notifications_count})
+    res.send({status:'success',admin_notifications_count:notifications})
   }
   catch(e){
+    console.log(e)
     res.send({status:'fail',admin_notifications_count:0})
   }
 }

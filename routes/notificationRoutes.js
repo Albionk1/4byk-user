@@ -42,11 +42,11 @@ const routeLimiter = rateLimit({
       fileFilter,
       limits: { fileSize: 5000000 },
     })
-    router.post('/add-notification',authController.addNotification)
-    router.delete('/delete-all-notification',authController.deleteAllNotification)
-    router.get('/get-notifications',requireAuth,authController.getNotifications)
-    router.get('/get-notifications-count',requireAuth,authController.getNotificationsCount)
-    router.get('/mark-all-as-read', requireAuth, authController.markAllNotificationsToRead)
+    router.post('/add-notification',notificationController.addNotification)
+    router.delete('/delete-all-notification',notificationController.deleteAllNotification)
+    router.get('/get-notifications',requireAuth,notificationController.getNotifications)
+    router.get('/get-notifications-count',requireAuth,notificationController.getNotificationsCount)
+    router.get('/mark-all-as-read', requireAuth, notificationController.markAllNotificationsToRead)
 
 
 
