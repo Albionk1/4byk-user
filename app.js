@@ -62,6 +62,7 @@ app.get('/images/:key', (req, res) => {
 app.use('/', authRouter)
 app.use('/api/v1/mobile/auth', authRouterMobile)
 app.use('/message', messageRouter)
+app.use('/notification', messageRouter)
 
 
 //app.use('/', clientRouter)
