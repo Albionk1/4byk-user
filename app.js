@@ -10,6 +10,7 @@ const authRouter = require('./routes/authRoutes')
 const authRouterMobile = require('./routes/mobileRoutes/authRoutesMobile')
 const messageRouter = require('./routes/messageRoutes')
 const notificationRouter = require('./routes/notificationRoutes')
+const followRouterMobile = require('./routes/mobileRoutes/followRoutesMobile')
 const User = require('./models/userModel')
 
 
@@ -69,11 +70,14 @@ app.get('/images/:key', (req, res) => {
     console.log(error)
   }
 })
-
+//web
 app.use('/', authRouter)
-app.use('/api/v1/mobile/auth', authRouterMobile)
 app.use('/message', messageRouter)
 app.use('/notification', notificationRouter)
+//mobile
+app.use('/api/v1/mobile/auth', authRouterMobile)
+app.use('/api/v1/mobile/follow', followRouterMobile)
+
 
 
 //app.use('/', clientRouter)
