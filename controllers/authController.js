@@ -418,6 +418,46 @@ module.exports.getAllMyFollowing = async(req,res)=>{
   }
 }
 
+module.exports.getUserByLocation = async(req,res)=>{
+  try{
+    const data = await User.aggregate([
+      {
+        $match: {
+          isActive: true,
+          deleted: false,
+          ban: false
+        }
+      },
+      {
+        $group: {
+          _id: "$country",
+          female: {
+            $sum: {
+              $cond: [{ $eq: ["$gender", "female"] }, 1, 0]
+            }
+          },
+          male: {
+            $sum: {
+              $cond: [{ $eq: ["$gender", "male"] }, 1, 0]
+            }
+          }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          region: "$_id",
+          female: 1,
+          male: 1
+        }
+      }
+    ]);
+    res.send(data)
+  }
+  catch(e){
+    res.send([])
+  }
+}
 
 module.exports.logout = (req, res) => {
   res.cookie('jwt', '', { maxAge: 1 })

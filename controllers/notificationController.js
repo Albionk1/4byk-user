@@ -80,7 +80,7 @@ module.exports.getNotifications=async(req,res)=>{
 
 module.exports.getNotificationsCount=async(req,res)=>{
   try{
-    const notifications = await Notification.countDocuments({to:req.user._id})
+    const notifications = await Notification.countDocuments({to:req.user._id,status:'delivered'})
     res.send({status:'success',admin_notifications_count:notifications})
   }
   catch(e){
