@@ -1,5 +1,6 @@
 const User = require('../models/userModel')
 const url = require('url')
+const moment = require('moment')
 const maxAge = 3 * 24 * 60 * 60
 const jwt = require('jsonwebtoken')
 const createToken = (id) => {
@@ -420,13 +421,21 @@ module.exports.getAllMyFollowing = async(req,res)=>{
 
 module.exports.getUserByLocation = async(req,res)=>{
   try{
+    let filter = {  isActive: true,
+      deleted: false,
+      ban: false}
+if(req.query.year){
+  const startDate = moment(`${req.query.year}-01-01`, 'YYYY/MM/DD')
+  .startOf('day')
+  .toDate()
+const endDate = moment(`${req.query.year}-12-31`, 'YYYY/MM/DD')
+  .endOf('day')
+  .toDate()
+  filter.createdAt= { $gte: startDate, $lte: endDate }
+}
     const data = await User.aggregate([
       {
-        $match: {
-          isActive: true,
-          deleted: false,
-          ban: false
-        }
+        $match: filter
       },
       {
         $group: {
