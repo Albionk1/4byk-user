@@ -47,7 +47,7 @@ router.post('/add-user',upload.single('image'),authController.addUser)
 router.post('/edit-user',upload.single('image'),requireAuth,authController.updateUser)
 router.post('/edit-profile-pic',upload.single('image'),requireAuth,authController.editProfilePic)
 router.patch('/delete-user',upload.none(),requireAuth,accessStaff('u-list'),authController.deleteUser)
-
+router.delete('/delete-account',upload.none(),authController.deleteAccount)
 //admin
 router.post('/add-admin',upload.single('image'),authController.addAdmin)
 router.get('/get-admin-list',authController.getAdminList)

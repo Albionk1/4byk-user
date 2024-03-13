@@ -103,6 +103,9 @@ module.exports.login = async (req, res) => {
     const { email, password } = req.body
       const user = await User.login(email, password)
       if (user.isActive !== false) {
+        if(user.deleted){
+          throw Error('incorrect password')
+        }
         const token = createToken(user._id)
         res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 })
         res.send({ data: { user },cookie:token })
@@ -187,6 +190,26 @@ module.exports.deleteUser=async(req,res)=>{
    res.send({status:'fail',message:"not delited"})
   }
 }
+
+module.exports.deleteAccount = async(req,res)=>{
+  try {  
+    const { email, password } = req.body
+      const user = await User.login(email, password)
+      if (user.deleted !== false) {
+        throw Error('incorrect password')
+      } else {
+        res.cookie('jwt', '', { httpOnly: true, maxAge: 1 })
+        user.deleted = true
+        await user.save()
+        res.send({status:'true',message:'deleted'})
+      }
+    } catch (e) {
+      const errors = handleErrors(e)
+      res.status(400).json({ errors })
+      
+    }
+}
+
 module.exports.addAdmin = async(req,res)=>{
   try{
     req.body.image = ''
