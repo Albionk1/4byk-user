@@ -7,7 +7,7 @@ const createToken = (id) => {
     expiresIn: maxAge,
   })
 }
-// const { uploadFile, getFileStream, deleteImage } = require('../aws')
+const { uploadFile, getFileStream, deleteImage } = require('../../aws')
 
 const handleErrors = (err) => {
   let errors = {}
@@ -122,5 +122,55 @@ module.exports.getUserById = async(req,res)=>{
   }
   catch(e){
    res.send('')
+  }
+}
+module.exports.editProfilePic=async(req,res)=>{
+  try{
+    if (req.file) {
+      req.body.image = ''
+        const result = await uploadFile(req.file)
+          .then((result) => {
+            req.body.image = result.Key
+          })
+          .catch((error) => {
+            console.log(error)
+          })
+      }
+      const user = await User.findById(req.user._id)
+      deleteImage(user.image)
+       user.image = req.body.image
+       await user.save()
+    res.send({status:'success',message:'Image updated'})
+  }
+  catch(e){
+   res.send({status:'fail',message:"Image didn't updated"})
+  }
+}
+
+module.exports.editName=async(req,res)=>{
+  try{
+    const full_name= req.body.full_name
+    const user = await User.findById(req.user._id)
+    user.full_name = full_name
+    await user.save()
+    res.send({status:'success',message:'name updated'})
+  }
+  catch(e){
+   res.send({status:'fail',message:"name didn't updated"})
+
+  }
+}
+
+module.exports.editBio=async(req,res)=>{
+  try{
+    const bio= req.body.bio
+    const user = await User.findById(req.user._id)
+    user.bio = bio
+    await user.save()
+    res.send({status:'success',message:'bio updated'})
+  }
+  catch(e){
+   res.send({status:'fail',message:"bio didn't updated"})
+
   }
 }
