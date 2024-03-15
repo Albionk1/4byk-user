@@ -85,52 +85,49 @@ const handleErrors = (err) => {
  }
  module.exports.getMessageNotification=async(req,res)=>{
    try{
-     const message= await  Message.aggregate([
-         // Match messages that meet your criteria
-         {
-           $match: {
-             status: "delivered",
-             to: new mongoose.Types.ObjectId(req.user._id),
-           }
-         }, {
-           $sort: {
-             createdAt: -1
-           }
-         },
-         // Group messages by the "by" field and keep only the first one for each group
-         {
-           $group: {
-             _id: "$by",
-             message: { $first: "$message" },
-             createdAt: { $first: "$createdAt" }
-           }
-         },
-         // Sort the results by the "createdAt" field in descending order
-        
-         // Populate the "by" field with the corresponding user document
-         {
-           $lookup: {
-             from: "users", // replace with the name of your users collection
-             localField: "_id",
-             foreignField: "_id",
-             as: "user"
-           }
-         },
-         // Project only the "username" and "image" fields from the user document
-         {
-           $project: {
-             _id: 1,
-             message: 1,
-             createdAt: 1,
-             username: { $arrayElemAt: ["$user.username", 0] },
-             image: { $arrayElemAt: ["$user.image", 0] }
-           }
-         }
-       ]);
-       res.send(message)
+    const messages = await Message.aggregate([
+      {
+          $match: {
+              status:'delivered',
+              to: new mongoose.Types.ObjectId(req.user._id)
+          }
+      },
+      {
+          $sort: {
+              createdAt: 1
+          }
+      },
+      {
+          $group: {
+              _id: "$by",
+              message: { $first: "$message" },
+              createdAt: { $first: "$createdAt" }
+          }
+      },
+      {
+          $lookup: {
+              from: "users",
+              localField: "_id",
+              foreignField: "_id",
+              as: "user"
+          }
+      },
+      {
+          $unwind: "$user" // Unwind the array created by $lookup
+      },
+      {
+          $project: {
+              _id: 1,
+              message: 1,
+              createdAt: 1,
+              full_name: "$user.full_name",
+              image: "$user.image"
+          }
+      }
+  ]);
+       res.send(messages)
    }
    catch(e){
-      console.log(e)
       const errors = handleErrors(e)
       res.send({errors})
    }
