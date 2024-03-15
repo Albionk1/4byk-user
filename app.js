@@ -40,7 +40,7 @@ if(process.env.NODE_ENV==='development'){
 }else{
 io=socketio(server, {
   cors: {
-    origin: "https://four-buyk-1d9588e95312.herokuapp.com",
+    origin: ["https://four-buyk-1d9588e95312.herokuapp.com","https://www.4buyk.com"],
     methods: ["GET", "POST"]
   }
 });
