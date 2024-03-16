@@ -441,7 +441,21 @@ module.exports.getAllMyFollowing = async(req,res)=>{
     res.send([])
   }
 }
-
+module.exports.getUsersForMessage = async(req,res)=>{
+  try{
+    const user = req.body.user
+    const followers = await Follow.find({ friendId: user }).select('userId');
+const following = await Follow.find({ userId: user }).select('friendId userId');
+const followersIds = followers.map(follower => follower.userId.toString());
+const followingIds = following.map(follow => follow.friendId.toString());
+const mutualFriendsIds = followersIds.filter(id => followingIds.includes(id));
+const mutualFriends = await User.find({ _id: { $in: mutualFriendsIds } }).select('_id full_name image')
+res.send(mutualFriends)
+  }
+  catch(e){
+    res.send([])
+  }
+}
 module.exports.getUserByLocation = async(req,res)=>{
   try{
     let filter = {  isActive: true,

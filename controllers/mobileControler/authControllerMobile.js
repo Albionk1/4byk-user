@@ -1,6 +1,6 @@
 const User = require('../../models/userModel')
 const url = require('url')
-const maxAge = 3 * 24 * 60 * 60
+const maxAge = 30 * 24 * 60 * 60
 const jwt = require('jsonwebtoken')
 const createToken = (id) => {
   return jwt.sign({ id }, process.env.SECRET, {
