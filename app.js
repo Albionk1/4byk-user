@@ -11,6 +11,7 @@ const authRouterMobile = require('./routes/mobileRoutes/authRoutesMobile')
 const messageRouter = require('./routes/messageRoutes')
 const notificationRouter = require('./routes/notificationRoutes')
 const followRouterMobile = require('./routes/mobileRoutes/followRoutesMobile')
+const notificationRouterMobile = require('./routes/mobileRoutes/notificationRoutesMobile')
 const User = require('./models/userModel')
 
 
@@ -77,6 +78,7 @@ app.use('/notification', notificationRouter)
 //mobile
 app.use('/api/v1/mobile/auth', authRouterMobile)
 app.use('/api/v1/mobile/follow', followRouterMobile)
+app.use('/api/v1/mobile/notification', notificationRouterMobile)
 
 
 

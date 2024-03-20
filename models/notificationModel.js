@@ -20,7 +20,7 @@ const notificationSchema = new mongoose.Schema(
     from:{
       type:String,
       enum: {
-         values: ["reel", "forum"],
+         values: ["reel", "forum",'like','follow'],
          message: `Status nuk është i saktë`,
        },
        default: 'delivered',
