@@ -12,6 +12,7 @@ const messageRouter = require('./routes/messageRoutes')
 const notificationRouter = require('./routes/notificationRoutes')
 const followRouterMobile = require('./routes/mobileRoutes/followRoutesMobile')
 const notificationRouterMobile = require('./routes/mobileRoutes/notificationRoutesMobile')
+const messageRouterMobile = require('./routes/mobileRoutes/messageRoutesMobile')
 const User = require('./models/userModel')
 
 
@@ -79,6 +80,7 @@ app.use('/notification', notificationRouter)
 app.use('/api/v1/mobile/auth', authRouterMobile)
 app.use('/api/v1/mobile/follow', followRouterMobile)
 app.use('/api/v1/mobile/notification', notificationRouterMobile)
+app.use('/api/v1/mobile/message', messageRouterMobile)
 
 
 
@@ -96,13 +98,10 @@ db.on('error', console.error.bind(console, 'connection error:'))
 
 io.on('connection', (socket) => { 
 app.use(socketMiddleware(socket))
-  socket.on('join', ({ myId, client }) => { 
+  socket.on('join', ({ myId }) => { 
     removeUser(socket.id)
-    const user = addUser({ id: socket.id, userId: myId, client })
+    const user = addUser({ id: socket.id, userId: myId })
     socket.join(user.userId)
-    if (client) {
-      socket.join(client)
-    }
   })
   socket.on('joinRoom', ({ myId, otherUserId }) => {
     
