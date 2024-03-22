@@ -7,6 +7,7 @@ const createToken = (id) => {
     expiresIn: maxAge,
   })
 }
+const Message = require('../../models/messageModel')
 const { uploadFile, getFileStream, deleteImage } = require('../../aws')
 
 const handleErrors = (err) => {
@@ -172,5 +173,60 @@ module.exports.editBio=async(req,res)=>{
   catch(e){
    res.send({status:'fail',message:"bio didn't updated"})
 
+  }
+}
+
+module.exports.getUsersForMessage = async(req,res)=>{
+  try{
+    const user = req.user._id
+    const userForMessage = req.body.user
+    const followers = await Follow.find({ friendId: user }).select('userId');
+const following = await Follow.find({ userId: user }).select('friendId userId');
+const followersIds = followers.map(follower => follower.userId.toString());
+const followingIds = following.map(follow => follow.friendId.toString());
+const mutualFriendsIds = followersIds.filter(id => followingIds.includes(id));
+const messages = await Message.aggregate([
+  {
+    $match: {
+      $or: [
+        { $and: [{ by: user }, { offert: true }] }, // User writes an offer
+        { $and: [{ to: user }, { offert: true }] }   // User receives an offer
+      ]
+    }
+  },
+  {
+    $group: {
+      _id: {
+        $cond: [
+          { $gte: ["$by", "$to"] },
+          { to: "$to", by: "$by" },
+          { to: "$by", by: "$to" }
+        ]
+      }
+    }
+  },
+  {
+    $project: {
+      _id: 0,
+      users: ["$_id.by", "$_id.to"]
+    }
+  }
+]);
+messages.forEach(message => {
+  if (message.users[0] !== user.toString()) {
+    mutualFriendsIds.push(message.users[0]);
+  }
+  if (message.users[1] !== user.toString()) {
+    mutualFriendsIds.push(message.users[1]);
+  }
+});
+if(userForMessage){
+  if(!mutualFriendsIds.includes(userForMessage))mutualFriendsIds.push(userForMessage);
+}
+const mutualFriends = await User.find({ _id: { $in: mutualFriendsIds } }).select('_id full_name image')
+res.send(mutualFriends)
+  }
+  catch(e){
+    res.send([])
   }
 }

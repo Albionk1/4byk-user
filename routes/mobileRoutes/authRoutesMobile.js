@@ -47,4 +47,5 @@ router.post('/get-user-id',authController.getUserById)
 router.post('/edit-profile-pic',upload.single('image'),requireAuthMobile,authController.editProfilePic)
 router.post('/edit-name',requireAuthMobile,authController.editName)
 router.post('/edit-bio',requireAuthMobile,authController.editBio)
+router.post('/get-users-for-message',requireAuthMobile,authController.getUsersForMessage)
 module.exports=router
