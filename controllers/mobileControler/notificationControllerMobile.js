@@ -52,15 +52,36 @@ module.exports.getNotifications=async(req,res)=>{
     const limit = parseInt(req.query.limit) || 5;
     const skipIndex = (page - 1) * limit;
      let userId =[]
+     let reels
      let notificationIds = []
     const notifications = await Notification.find({to:req.user._id}).sort({createdAt:-1}).skip(skipIndex).limit(5).lean().populate('by','full_name image')
+    const reelIds=[]
     for(let i =0;i<notifications.length;i++){
       userId.push(notifications[i].by)
       if(notifications[i].url&&notifications[i].url.includes('reels-single')){
         notifications[i].reel_id=notifications[i].url.split('/')[2]
       }
+      if(notifications[i].from==='like'||notifications[i].from==='comment'){
+        reelIds.push(notifications[i].url.split('/')[2])
+      }
       notificationIds.push(notifications[i]._id)
     }
+    if (process.env.NODE_ENV === 'development') {
+      const responseLike = await axios.get('http://localhost:3002/get-reels-image?reelIds=' + reelIds.join(','));
+      reels = responseLike.data;
+  }
+   else {
+      const responseLike = await axios.get('https://four-buyk-post-f28d12848a02.herokuapp.com/get-reels-image?reelIds=' + reelIds.join(','));
+      reels = responseLike.data;
+  }
+
+  for (let i =0 ;i<reels.length;i++){
+    for(let a =0;a<notifications.length;a++){
+      if(notifications[a].from==='like'||notifications[a].from==='comment' && reels[i]._id.toString()===notifications[a].reel_id){
+        notifications[a].reel_thumbnail =  reels[i].thumbnail
+      }
+    }
+  }
     const hasMore = (skipIndex + limit) < await Notification.countDocuments({
       to:req.user._id
     });
