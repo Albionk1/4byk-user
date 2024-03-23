@@ -50,11 +50,16 @@ module.exports.getNotifications=async(req,res)=>{
   try{
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 5;
+    const date = req.query.date
     const skipIndex = (page - 1) * limit;
      let userId =[]
      let reels
      let notificationIds = []
-    const notifications = await Notification.find({to:req.user._id}).sort({createdAt:-1}).skip(skipIndex).limit(5).lean().populate('by','full_name image')
+     let filter = {to:req.user._id}
+     if(date){
+      filter.updatedAt ={$lte:date}
+     }
+    const notifications = await Notification.find().sort({createdAt:-1}).limit(limit).lean().populate('by','full_name image')
     const reelIds=[]
     for(let i =0;i<notifications.length;i++){
       userId.push(notifications[i].by)
