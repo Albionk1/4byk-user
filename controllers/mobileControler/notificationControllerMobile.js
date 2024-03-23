@@ -56,6 +56,9 @@ module.exports.getNotifications=async(req,res)=>{
     const notifications = await Notification.find({to:req.user._id}).sort({createdAt:-1}).skip(skipIndex).limit(5).lean().populate('by','full_name image')
     for(let i =0;i<notifications.length;i++){
       userId.push(notifications[i].by)
+      if(notifications[i].url&&notifications[i].url.includes('reels-single')){
+        notifications[i].reel_id=notifications[i].url.split('/')[2]
+      }
       notificationIds.push(notifications[i]._id)
     }
     const hasMore = (skipIndex + limit) < await Notification.countDocuments({
