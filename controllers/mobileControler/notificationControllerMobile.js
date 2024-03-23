@@ -74,7 +74,6 @@ module.exports.getNotifications=async(req,res)=>{
       const responseLike = await axios.get('https://four-buyk-post-f28d12848a02.herokuapp.com/get-reels-image?reelIds=' + reelIds.join(','));
       reels = responseLike.data;
   }
-
   for (let i =0 ;i<reels.length;i++){
     for(let a =0;a<notifications.length;a++){
       if(notifications[a].from==='like'||notifications[a].from==='comment' && reels[i]._id.toString()===notifications[a].reel_id){
