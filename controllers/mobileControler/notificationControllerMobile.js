@@ -53,7 +53,7 @@ module.exports.getNotifications=async(req,res)=>{
     const skipIndex = (page - 1) * limit;
      let userId =[]
      let notificationIds = []
-    const notifications = await Notification.find({to:req.user._id}).skip(skipIndex).limit(5).lean().populate('by','full_name image')
+    const notifications = await Notification.find({to:req.user._id}).sort({createdAt:-1}).skip(skipIndex).limit(5).lean().populate('by','full_name image')
     for(let i =0;i<notifications.length;i++){
       userId.push(notifications[i].by)
       notificationIds.push(notifications[i]._id)
