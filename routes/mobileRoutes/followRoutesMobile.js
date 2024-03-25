@@ -27,5 +27,6 @@ router.get('/get-my-following',requireAuthMobile,followController.getMyFollowing
 router.get('/get-my-followers',requireAuthMobile,followController.getMyFollowers)
 // ky route ti kthen te gjith personat qe i ke follow por vetem id e user te tyre ne friendId
 router.get('/get-all-my-following',requireAuthMobile,followController.getAllMyFollowing)
+//
 
 module.exports=router
