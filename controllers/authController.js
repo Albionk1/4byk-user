@@ -414,7 +414,7 @@ module.exports.getMyFollowing = async(req,res)=>{
   try{
     let pageNumber = parseInt(req.body.pageNumber)|| 0
     const user = req.body.user
-    const following = await Follow.find({userId:user}).populate('friendId','image full_name').skip(pageNumber).limit(10).lean()
+    const following = await Follow.find({userId:user}).populate('friendId','image full_name').skip(pageNumber*10).limit(10).lean()
     if(req.user){
       for(let i =0;i<following.length;i++){
       const friendId=  following[i].friendId._id

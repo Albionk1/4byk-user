@@ -7,6 +7,7 @@ const createToken = (id) => {
     expiresIn: maxAge,
   })
 }
+const Follow = require('../../models/followModel')
 const Message = require('../../models/messageModel')
 const { uploadFile, getFileStream, deleteImage } = require('../../aws')
 
