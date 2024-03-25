@@ -140,6 +140,23 @@ app.use(socketMiddleware(socket))
     //   }    
     // }
   })
+  socket.on('messageSendMobile', async({ userId,myId, message }) => { 
+    const user = getUser(userId) 
+    if (user) { 
+      if (user.room==[userId,myId.toString()].join('')) {
+       return io.to(user.userId).emit('reciveMessageRoomMobile', { recivemessage: message,offert:false})
+      }
+      if (!user.room && user.userId) {
+        io.to(user.userId).emit('reciveMessageMobile', {myId:myId.toString(), message,offert:false })
+      }
+    }
+    // else{ 
+    //   const userToken = await User.findById(userId).select('fcm_token')
+    //   if(userToken){
+    //     sendMessage("Hejposta", message,userToken.fcm_token);
+    //   }    
+    // }
+  })
   socket.on('offertSend', async({ userId,myId, message,price,title,image }) => { 
     const user = getUser(userId) 
     if (user) { 

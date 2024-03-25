@@ -128,70 +128,54 @@ module.exports.follow = async(req,res)=>{
 
  module.exports.getUsers =async(req,res) =>{
   try{
-    let length = parseInt(req.query.length) || 10
-    const search = req.query.search
-    let filter ={$or: [
-      { userId: mongoose.Types.ObjectId(req.user._id) },
-      { friendId: mongoose.Types.ObjectId(req.user._id) }
-    ]}
-
-    if(search){
-      filter.userId.full_name
-      filter.friendId.full_name
+    let limit = parseInt(req.query.limit) || 10;
+    const search = req.query.search;
+    
+    // Filter based on userId and friendId only
+    let filter = {
+      $or: [
+        { userId: new mongoose.Types.ObjectId(req.user._id) },
+        { friendId: new mongoose.Types.ObjectId(req.user._id) }
+      ]
+    };
+    
+    if (search) {
+      filter.$or.push({ 'user.full_name': { $regex: search, $options: 'i' } });
+      filter.$or.push({ 'friend.full_name': { $regex: search, $options: 'i' } });
     }
-    if(date){
-      
-    }
+    
     const users = await Follow.aggregate([
       {
-        $match: {
-          
-        }
+        $lookup: {
+          from: 'users',
+          localField: 'userId',
+          foreignField: '_id',
+          as: 'user',
+        },
       },
       {
         $lookup: {
-          from: "users",
-          localField: "userId",
-          foreignField: "_id",
-          as: "user"
-        }
+          from: 'users',
+          localField: 'friendId',
+          foreignField: '_id',
+          as: 'friend',
+        },
       },
       {
-        $lookup: {
-          from: "users",
-          localField: "friendId",
-          foreignField: "_id",
-          as: "friend"
-        }
+        $unwind: "$user"
       },
       {
-        $project: {
-          user: { $arrayElemAt: ["$user", 0] },
-          friend: { $arrayElemAt: ["$friend", 0] }
-        }
+        $unwind: "$friend"
       },
       {
-        $project: {
-          "user._id": 1,
-          "user.full_name": 1,
-          "user.image": 1,
-          "friend._id": 1,
-          "friend.full_name": 1,
-          "friend.image": 1
-        }
+        $match: filter // Applying the filter conditions
       },
       {
-        $match: {
-          $or: [
-            { "": { $regex: search, $options: 'i' } },
-            { "friend.full_name": { $regex: search, $options: 'i' } }
-          ]
-        }
-      },
-      { $limit: length }
+        $limit: limit
+      }
     ]);
     
-    res.send(users)
+    res.send(users);
   }
   catch(e){
  console.log(e)
