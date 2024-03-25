@@ -204,7 +204,8 @@ const handleErrors = (err) => {
           message: 1,
           status:1,
           createdAt: 1,
-          username: { $arrayElemAt: ["$user.full_name", 0] },
+          id:{ $arrayElemAt: ["$user._id", 0] },
+          full_name: { $arrayElemAt: ["$user.full_name", 0] },
           image: { $arrayElemAt: ["$user.image", 0] }
         }
       }
