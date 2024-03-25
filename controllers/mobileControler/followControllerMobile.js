@@ -9,6 +9,7 @@ const createToken = (id) => {
   })
 }
 // const { uploadFile, getFileStream, deleteImage } = require('../aws')
+const mongoose = require('mongoose')
 
 const handleErrors = (err) => {
   let errors = {}
@@ -123,4 +124,77 @@ module.exports.follow = async(req,res)=>{
    catch(e){
      res.send([])
    }
+ }
+
+ module.exports.getUsers =async(req,res) =>{
+  try{
+    let length = parseInt(req.query.length) || 10
+    const search = req.query.search
+    let filter ={$or: [
+      { userId: mongoose.Types.ObjectId(req.user._id) },
+      { friendId: mongoose.Types.ObjectId(req.user._id) }
+    ]}
+
+    if(search){
+      filter.userId.full_name
+      filter.friendId.full_name
+    }
+    if(date){
+      
+    }
+    const users = await Follow.aggregate([
+      {
+        $match: {
+          
+        }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "user"
+        }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "friendId",
+          foreignField: "_id",
+          as: "friend"
+        }
+      },
+      {
+        $project: {
+          user: { $arrayElemAt: ["$user", 0] },
+          friend: { $arrayElemAt: ["$friend", 0] }
+        }
+      },
+      {
+        $project: {
+          "user._id": 1,
+          "user.full_name": 1,
+          "user.image": 1,
+          "friend._id": 1,
+          "friend.full_name": 1,
+          "friend.image": 1
+        }
+      },
+      {
+        $match: {
+          $or: [
+            { "": { $regex: search, $options: 'i' } },
+            { "friend.full_name": { $regex: search, $options: 'i' } }
+          ]
+        }
+      },
+      { $limit: length }
+    ]);
+    
+    res.send(users)
+  }
+  catch(e){
+ console.log(e)
+ res.send([])
+  }
  }

@@ -166,45 +166,43 @@ const handleErrors = (err) => {
 
  module.exports.getLatestMessage=async(req,res)=>{
   try{
-  const message = await  Message.aggregate([
-      // Match messages that meet your criteria
+    const message = await Message.aggregate([
       {
         $match: {
           to: new mongoose.Types.ObjectId(req.user._id),
         }
-      }, {
+      }, 
+      {
         $sort: {
           createdAt: -1
         }
       },
-      // Group messages by the "by" field and keep only the first one for each group
       {
         $group: {
           _id: "$by",
           message: { $first: "$message" },
           status: { $first: "$status" },
-          createdAt: { $first: "$createdAt" }
+          createdAt: { $first: "$createdAt" },
+          by: { $first: "$by" }, 
+          to: { $first: "$to" } 
         }
       },
-      // Sort the results by the "createdAt" field in descending order
-     
-      // Populate the "by" field with the corresponding user document
       {
         $lookup: {
-          from: "users", // replace with the name of your users collection
+          from: "users", 
           localField: "_id",
           foreignField: "_id",
           as: "user"
         }
       },
-      // Project only the "username" and "image" fields from the user document
       {
         $project: {
           _id: 1,
           message: 1,
-          status:1,
+          status: 1,
+          by: 1,
+          to: 1,
           createdAt: 1,
-          id:{ $arrayElemAt: ["$user._id", 0] },
           full_name: { $arrayElemAt: ["$user.full_name", 0] },
           image: { $arrayElemAt: ["$user.image", 0] }
         }
