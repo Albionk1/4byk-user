@@ -10,6 +10,7 @@ const createToken = (id) => {
 const Follow = require('../../models/followModel')
 const Message = require('../../models/messageModel')
 const { uploadFile, getFileStream, deleteImage } = require('../../aws')
+const mongoose = require('mongoose')
 
 const handleErrors = (err) => {
   let errors = {}
@@ -190,8 +191,8 @@ const messages = await Message.aggregate([
   {
     $match: {
       $or: [
-        { $and: [{ by: user }, { offert: true }] }, // User writes an offer
-        { $and: [{ to: user }, { offert: true }] }   // User receives an offer
+        { $and: [{ by: new mongoose.Types.ObjectId(user) }, { offert: true }] },
+        { $and: [{ to: new mongoose.Types.ObjectId(user) }, { offert: true }] }   
       ]
     }
   },
