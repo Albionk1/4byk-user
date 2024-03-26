@@ -169,7 +169,13 @@ const handleErrors = (err) => {
     const message = await Message.aggregate([
       {
         $match: {
+          $or:[
+            {
           to: new mongoose.Types.ObjectId(req.user._id),
+            },{
+          by: new mongoose.Types.ObjectId(req.user._id),
+            }
+          ]
         }
       }, 
       {
