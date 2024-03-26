@@ -26,7 +26,7 @@ const handleErrors = (err) => {
       const obj={by:req.user._id,to,message}
       const user=getUser(to.toString())
       if (user) {
-         if(user.room==[to, by].join('')){
+         if(user.room==[to, req.user._id].join('')){
             obj.status='seen'
          }
        }
