@@ -127,9 +127,11 @@ app.use(socketMiddleware(socket))
     const user = getUser(userId) 
     if (user) { 
       if (user.room==[userId,myId.toString()].join('')) {
+        io.to(user.userId).emit('reciveMessageRoomMobile', { recivemessage: message,offert:false})
        return io.to(user.userId).emit('reciveMessageRoom', { recivemessage: message,offert:false})
       }
       if (!user.room && user.userId) {
+        io.to(user.userId).emit('reciveMessageMobile', {myId:myId.toString(), message,offert:false })
         io.to(user.userId).emit('reciveMessage', {myId:myId.toString(), message,offert:false })
       }
     }
@@ -144,10 +146,12 @@ app.use(socketMiddleware(socket))
     const user = getUser(userId) 
     if (user) { 
       if (user.room==[userId,myId.toString()].join('')) {
-       return io.to(user.userId).emit('reciveMessageRoomMobile', { recivemessage: message,offert:false})
+        io.to(user.userId).emit('reciveMessageRoomMobile', { recivemessage: message,offert:false})
+        return io.to(user.userId).emit('reciveMessageRoom', { recivemessage: message,offert:false})
       }
       if (!user.room && user.userId) {
         io.to(user.userId).emit('reciveMessageMobile', {myId:myId.toString(), message,offert:false })
+        io.to(user.userId).emit('reciveMessage', {myId:myId.toString(), message,offert:false })
       }
     }
     // else{ 
