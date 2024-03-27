@@ -66,7 +66,7 @@ router.post('/get-all-my-following',authController.getAllMyFollowing)
 router.post('/get-users-for-message',authController.getUsersForMessage)
 //statistic route
 router.get('/get-user-by-location',requireAuth,authController.getUserByLocation)
-
+router.post('/get-users-search-header',upload.none(),authController.getUserSearchHeader)
 
 //logout
 router.get('/logout',authController.logout)

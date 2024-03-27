@@ -566,6 +566,19 @@ const endDate = moment(`${req.query.year}-12-31`, 'YYYY/MM/DD')
   }
 }
 
+module.exports.getUserSearchHeader = async(req,res)=>{
+  try{
+    const search = req.body.search
+    if (!search || search.length < 3) {
+      return res.send([])
+    }
+    const users = await User.find({ 'full_name': { $regex: search, $options: 'i' }, deleted: false }).limit(9).lean().select('full_name  image')
+    res.send(users)
+  }
+  catch(e){
+   res.send([])
+  }
+}
 module.exports.logout = (req, res) => {
   res.cookie('jwt', '', { maxAge: 1 })
   res.redirect('/login')
