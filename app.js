@@ -14,6 +14,7 @@ const followRouterMobile = require('./routes/mobileRoutes/followRoutesMobile')
 const notificationRouterMobile = require('./routes/mobileRoutes/notificationRoutesMobile')
 const messageRouterMobile = require('./routes/mobileRoutes/messageRoutesMobile')
 const User = require('./models/userModel')
+const { initializeApp, sendMessage } = require('./controllers/fcm_notifications')
 
 
 const dotenv = require('dotenv');
@@ -95,7 +96,9 @@ app.use('/api/v1/mobile/message', messageRouterMobile)
 mongoose.connect(process.env.DATABASE, { useNewUrlParser: true })
 const db = mongoose.connection
 db.on('error', console.error.bind(console, 'connection error:'))
-
+db.once('open', () => { 
+  initializeApp() 
+})
 io.on('connection', (socket) => { 
 app.use(socketMiddleware(socket))
   socket.on('join', ({ myId }) => { 
@@ -154,12 +157,12 @@ app.use(socketMiddleware(socket))
         io.to(user.userId).emit('reciveMessage', {myId:myId.toString(), message,offert:false })
       }
     }
-    // else{ 
-    //   const userToken = await User.findById(userId).select('fcm_token')
-    //   if(userToken){
-    //     sendMessage("Hejposta", message,userToken.fcm_token);
-    //   }    
-    // }
+    else{ 
+      const users = await User.find({_id:{$in:[userId,myId]}}).select('fcm_token full_name')
+      if(users.length==2){
+        sendMessage(users[1].full_name, message,users[0].fcm_token[users[0].fcm_token.length-1]);
+      }     
+    }
   })
   socket.on('offertSend', async({ userId,myId, message,price,title,image }) => { 
     const user = getUser(userId) 

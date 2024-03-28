@@ -62,10 +62,14 @@ const handleErrors = (err) => {
 }
 module.exports.login = async (req, res) => {
     try {  
-    const { email, password } = req.body
+    const { email, password,fcm_token } = req.body
       const user = await User.login(email, password)
       if (user.isActive !== false) {
         const token = createToken(user._id)
+        if(!user.fcm_token.includes(fcm_token)&&fcm_token){
+         user.fcm_token.push(fcm_token)
+         await user.save()
+        }
         res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 })
         res.send({ data: { user },token})
       } else {

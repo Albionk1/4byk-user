@@ -149,7 +149,11 @@ const userSchema = new mongoose.Schema(
     ban: {
       type: Boolean,
       default: false
-    }
+    },
+    fcm_token: [{
+      type: String,
+      default: "",
+    }]
   },
   {
     timestamps: true,
