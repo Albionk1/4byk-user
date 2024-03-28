@@ -158,10 +158,8 @@ app.use(socketMiddleware(socket))
       }
     }
     else{ 
-      const users = await User.find({_id:{$in:[userId,myId]}}).select('fcm_token full_name')
-      if(users.length==2){
-        sendMessage(users[1].full_name, message,users[0].fcm_token[users[0].fcm_token.length-1]);
-      }     
+      const user = await User.findById(userId).select('fcm_token')
+        sendMessage(message.full_name, message,user.fcm_token[user.fcm_token.length-1]);    
     }
   })
   socket.on('offertSend', async({ userId,myId, message,price,title,image }) => { 
