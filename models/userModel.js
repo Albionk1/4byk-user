@@ -59,6 +59,9 @@ const userSchema = new mongoose.Schema(
     image: {
       type: String,
     },
+    cover: {
+      type: String,
+    },
     bio: {
       type: String,
     },

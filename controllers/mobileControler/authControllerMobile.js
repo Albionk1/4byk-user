@@ -154,6 +154,28 @@ module.exports.editProfilePic=async(req,res)=>{
   }
 }
 
+module.exports.editProfileCover=async(req,res)=>{
+  try{
+    if (req.file) {
+      req.body.cover = ''
+        const result = await uploadFile(req.file)
+          .then((result) => {
+            req.body.cover = result.Key
+          })
+          .catch((error) => {
+            console.log(error)
+          })
+      }
+      const user = await User.findById(req.user._id)
+      deleteImage(user.cover)
+       user.cover = req.body.cover
+       await user.save()
+    res.send({status:'success',message:'Cover updated'})
+  }
+  catch(e){
+   res.send({status:'fail',message:"Cover didn't updated"})
+  }
+}
 module.exports.editName=async(req,res)=>{
   try{
     const full_name= req.body.full_name
