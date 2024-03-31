@@ -49,4 +49,5 @@ router.post('/edit-profile-cover',upload.single('cover'),requireAuthMobile,authC
 router.post('/edit-name',requireAuthMobile,authController.editName)
 router.post('/edit-bio',requireAuthMobile,authController.editBio)
 router.post('/get-users-for-message',requireAuthMobile,authController.getUsersForMessage)
+router.get('/search-users',authController.searchUsers)
 module.exports=router

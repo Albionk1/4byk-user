@@ -258,3 +258,18 @@ res.send(mutualFriends)
     res.send([])
   }
 }
+
+module.exports.searchUsers = async(req,res)=>{
+  try{
+      const {search,date} = req.query
+      const filter ={ 'full_name': { $regex: search, $options: 'i' }, deleted: false }
+      if(date){
+        filter.updatedAt ={$lte:date}
+       }
+      const user = await User.find(filter).limit(20).sort({updatedAt:-1}).select('full_name image cover')
+      res.send({status:'success',data:user})
+  }
+  catch(e){
+    res.send({status:'fail',data:[]})
+  }
+}
