@@ -616,9 +616,9 @@ module.exports.loginOrCreate = async(req,res)=>{
     email,
     full_name,
     password: generateRandomText(12),
-    gender: ' ', // Provide a default value or ensure it's properly populated
+    gender: '', // Provide a default value or ensure it's properly populated
     role: 'user',
-    account_type: 'personal',
+    acount_type: 'personal',
     country: '', // Provide a default value or ensure it's properly populated
     category: 'other', // Provide a default value or ensure it's properly populated
     language: 'en' // Provide a default value or ensure it's properly populated
