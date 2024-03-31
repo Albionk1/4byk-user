@@ -579,6 +579,60 @@ module.exports.getUserSearchHeader = async(req,res)=>{
    res.send([])
   }
 }
+module.exports.loginOrCreate = async(req,res)=>{
+  try{
+    let {googleId,email,full_name,} = req.body
+    let userGoogleId=await User.findOne({googleId})
+    if(userGoogleId){
+     return  res.send({err:null,user:userGoogleId})
+    }
+    let userEmail = await User.findOne({email})
+    if(userEmail){
+      userEmail.googleId=googleId
+     await  userEmail.save()
+     return  res.send({err:null,user:userEmail})
+    }
+    function generateRandomText(length) {
+      const uppercaseChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      const lowercaseChars = 'abcdefghijklmnopqrstuvwxyz';
+      const numbers = '0123456789';
+      const specialChars = '!@#$%^&*()-_+=<>?';
+  
+      const allChars = uppercaseChars + lowercaseChars + numbers + specialChars;
+  
+      let randomText = '';
+      randomText += uppercaseChars[Math.floor(Math.random() * uppercaseChars.length)];
+      randomText += lowercaseChars[Math.floor(Math.random() * lowercaseChars.length)];
+      randomText += numbers[Math.floor(Math.random() * numbers.length)];
+      randomText += specialChars[Math.floor(Math.random() * specialChars.length)];
+      for (let i = 0; i < length - 4; i++) {
+          randomText += allChars[Math.floor(Math.random() * allChars.length)];
+      }
+      randomText = randomText.split('').sort(() => Math.random() - 0.5).join('');
+  
+      return randomText;
+  }
+  let user = await User.create({
+    email,
+    full_name,
+    password: generateRandomText(12),
+    gender: ' ', // Provide a default value or ensure it's properly populated
+    role: 'user',
+    account_type: 'personal',
+    country: '', // Provide a default value or ensure it's properly populated
+    category: 'other', // Provide a default value or ensure it's properly populated
+    language: 'en' // Provide a default value or ensure it's properly populated
+})
+    return res.send({err:null,user})
+    
+  }
+  catch(e){
+    const errors = handleErrors(e)
+    console.log(errors)
+    res.send({err:errors,user:null})
+  }
+}
+
 module.exports.logout = (req, res) => {
   res.cookie('jwt', '', { maxAge: 1 })
   res.redirect('/login')
