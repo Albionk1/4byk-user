@@ -152,6 +152,9 @@ const userSchema = new mongoose.Schema(
     googleId:{
      type:String
     },
+    facebookId:{
+      type:String
+     },
     fcm_token: [{
       type: String,
       default: "",

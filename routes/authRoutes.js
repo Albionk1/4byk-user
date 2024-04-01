@@ -72,7 +72,9 @@ router.post('/add-subscribe',upload.none(),authController.addSubscribe)
 
 
 //auth api
-router.post('/login-or-create',authController.loginOrCreate)
+router.post('/login-or-create-google',authController.loginOrCreateGoogle)
+router.post('/login-or-create-facebook',authController.loginOrCreateFacebook)
+
 
 //logout
 router.get('/logout',authController.logout)
