@@ -621,7 +621,8 @@ module.exports.loginOrCreate = async(req,res)=>{
     acount_type: 'personal',
     country: '', // Provide a default value or ensure it's properly populated
     category: 'other', // Provide a default value or ensure it's properly populated
-    language: 'en' // Provide a default value or ensure it's properly populated
+    language: 'en' ,
+    googleId
 })
     return res.send({err:null,user})
     
