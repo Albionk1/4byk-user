@@ -14,6 +14,7 @@ const mongoose = require('mongoose')
 
 // const { uploadFile, getFileStream, deleteImage } = require('../aws')
 const { uploadFile, getFileStream, deleteImage } = require('../aws')
+const Subscribe = require('../models/subscripeModel')
 
 const handleErrors = (err) => {
   let errors = {}
@@ -577,6 +578,18 @@ module.exports.getUserSearchHeader = async(req,res)=>{
   }
   catch(e){
    res.send([])
+  }
+}
+
+module.exports.addSubscribe = async(req,res)=>{
+  try{
+    const email = req.body.email
+    const subscribe = await Subscribe.create({email})
+    res.send({status:'success',message:'Subscrie added'})
+  }
+  catch(e){
+    const errors = handleErrors(e)
+    res.send({status:'fail',errors})
   }
 }
 module.exports.loginOrCreate = async(req,res)=>{

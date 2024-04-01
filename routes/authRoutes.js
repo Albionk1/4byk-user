@@ -67,7 +67,8 @@ router.post('/get-users-for-message',authController.getUsersForMessage)
 //statistic route
 router.get('/get-user-by-location',requireAuth,authController.getUserByLocation)
 router.post('/get-users-search-header',upload.none(),authController.getUserSearchHeader)
-
+//subscribe routes
+router.post('/add-subscribe',upload.none(),authController.addSubscribe)
 
 
 //auth api
