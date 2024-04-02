@@ -1,6 +1,6 @@
 const { CourierClient } = require('@trycourier/courier')
 
-const courier = CourierClient({
+const courier = new CourierClient({
   authorizationToken: process.env.COURIER_AUTH_TOKEN,
 })
 
@@ -10,7 +10,7 @@ const sendForgotPasswordEmail = (email, full_name, token) => {
       to: {
         email,
       },
-      template: 'ZBQ3VGDWWWMJB9MWZWM8QPDBYE6Q',
+      template: 'AZK2G5F7G34TAYQPZYAC3ANQZWPH',
       data: {
         full_name,
         token,

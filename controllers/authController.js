@@ -12,7 +12,7 @@ const Follow = require('../models/followModel')
 const Message = require('../models/messageModel')
 const mongoose = require('mongoose')
 const ForgotPassword= require('../models/forgotPasswordModel')
-// const {sendForgotPasswordEmail} = require('../email')
+const {sendForgotPasswordEmail} = require('../email')
 // const { uploadFile, getFileStream, deleteImage } = require('../aws')
 const { uploadFile, getFileStream, deleteImage } = require('../aws')
 const Subscribe = require('../models/subscripeModel')
@@ -706,17 +706,30 @@ module.exports.loginOrCreateFacebook = async(req,res)=>{
 module.exports.sendForgotPasswordEmail = async(req, res) => {
   try {
       const email = req.body.email
-
+let language 
       const user = await User.findOne({ email })
+if (req.cookies.language && req.cookies.language.includes('en')) {
+  language = 'en'
+}
 
+if (req.cookies.language && req.cookies.language.includes('al')) {
+  language = 'al'
+}
+if (!req.cookies.language || req.cookies.language.includes('de')) {
+  language ='de'
+}
       if (!user) {
-          return res.status(404).send({errors:{ message: 'Adresa elektronike është gabim' }})
+        if (language==='en')  return res.status(404).send({errors:{ message: 'Incorrect email address' }})
+      if (language==='al')  return res.status(404).send({errors:{ message: 'Adresa elektronike është gabim' }})
+      if (language ==='de') return res.status(404).send({errors:{ message: 'Falsche E-Mail Adresse' }})
       }
 
       const userAlreadyHasToken = await ForgotPassword.findOne({ user: user._id })
 
       if (userAlreadyHasToken) {
-          return res.status(400).send({ errors:{ message: 'Kontrolloni postën elektornike ju kemi derguar një kod për këtë llogari' }})
+        if (language==='en')  return res.status(400).send({errors:{ message: 'Check your email We have sent you a code for this account' }})
+      if (language==='al')  return res.status(400).send({errors:{ message: 'Kontrolloni postën elektornike ju kemi derguar një kod për këtë llogari' }})
+      if (language ==='de') return res.status(400).send({errors:{ message: 'Überprüfen Sie Ihre E-Mails. Wir haben Ihnen einen Code für dieses Konto gesendet' }})
       }
 
 
@@ -732,16 +745,18 @@ module.exports.sendForgotPasswordEmail = async(req, res) => {
 
 
       if (!token_db) {
-          return res.status(400).send({ errors:{ message: 'Diçka shkoi keq kodi nuk u krijua' }})
+        if (language==='en')  return res.status(400).send({errors:{ message: 'Something went wrong code not generated' }})
+      if (language==='al')  return res.status(400).send({errors:{ message: 'Diçka shkoi keq kodi nuk u krijua' }})
+      if (language ==='de') return res.status(400).send({errors:{ message: 'Es ist ein Fehler aufgetreten. Der Code wurde nicht generiert' }})
       }
 
 
 
 
-      sendForgotPasswordEmail(email, user.fullname, token)
-
-      res.send({ success:{ message: 'Emaili u dërgua me sukses' }})
-
+      sendForgotPasswordEmail(email, user.full_name, token)
+      if (language==='en')  return res.send({success:{ message: 'Email sent successfullyd' }})
+      if (language==='al')  return res.send({success:{ message: 'Emaili u dërgua me sukses' }})
+      if (language ==='de') return res.send({success:{ message: 'Email wurde erfolgreich Versendet' }})
   } catch (error) {
       res.status(500).send({
           errors:{
@@ -751,49 +766,70 @@ module.exports.sendForgotPasswordEmail = async(req, res) => {
   }
 }
 module.exports.updateForgotedPassword = async(req, res) => {
+        let language 
   try {
       const { token, password, confirm_password } = req.body
 
+if (req.cookies.language && req.cookies.language.includes('en')) {
+  language = 'en'
+}
+
+if (req.cookies.language && req.cookies.language.includes('al')) {
+  language = 'al'
+}
+if (!req.cookies.language || req.cookies.language.includes('de')) {
+  language ='de'
+}
       if (!password || !confirm_password || !token) {
-          return res.status(400).send({ errors:{ message: 'Të gjitha fushat janë të detyrueshme'} })
+        if (language==='en')  return res.status(400).send({errors:{ message: 'All fields are mandatory' }})
+        if (language==='al')  return res.status(400).send({errors:{ message: 'Të gjitha fushat janë të detyrueshme' }})
+        if (language ==='de') return res.status(400).send({errors:{ message: 'Alle Felder sind Pflichtfelder' }})
       }
 
       if (password !== confirm_password) {
-          return res.status(400).send({ errors:{message: 'Fjalëkalimet nuk përputhet' }})
+        if (language==='en')  return res.status(400).send({errors:{ message: 'Passwords do not match' }})
+        if (language==='al')  return res.status(400).send({errors:{ message: 'Fjalëkalimet nuk përputhet' }})
+        if (language ==='de') return res.status(400).send({errors:{ message: 'Passwörter stimmen nicht überein' }})
       }
 
 
-      const token_db = await ForgotPassword.findOne({ token }).populate('user')
+      const token_db = await ForgotPassword.findOne({ token })
 
       if (!token_db) {
-          return res.status(404).send({ errors:{message: 'Kodi është gabim'}})
+        if (language==='en')  return res.status(400).send({errors:{ message: 'The code is wrong' }})
+        if (language==='al')  return res.status(400).send({errors:{ message: 'Kodi është gabim' }})
+        if (language ==='de') return res.status(400).send({errors:{ message: 'Der Code ist falsch' }})
       }
       if(parseInt(token_db.expire_date)<Date.now()){
         token_db.delete()
-        return res.status(404).send({ errors:{message: 'Kodi ka skaduar provo më vonë'}})
+        if (language==='en')  return res.status(400).send({errors:{ message: 'Code has expired try again' }})
+        if (language==='al')  return res.status(400).send({errors:{ message: 'Kodi ka skaduar provo më vonë' }})
+        if (language ==='de') return res.status(400).send({errors:{ message: 'Der Code ist abgelaufen. Versuchen Sie es erneut' }})
+        return res.status(404).send({ errors:{message: ''}})
       }
 
 
       if (password.length < 6 || confirm_password.length < 6) {
-          return res.send({  errors:{message: 'Fjalëkalimi duhet të jet mes 6 dhe 50 karaktreve i gjat'}})
+        if (language==='en')  return res.status(400).send({errors:{ message: 'Password must be between 6 and 50 characters long' }})
+        if (language==='al')  return res.status(400).send({errors:{ message: 'Fjalëkalimi duhet të jet mes 6 dhe 50 karaktreve i gjat' }})
+        if (language ==='de') return res.status(400).send({errors:{ message: 'Das Passwort muss zwischen 6 und 50 Zeichen lang sein' }})
       }
 
-      const user = token_db.user
+      const user = await User.findById(token_db.user)
 
       user.password = password
-      const real_user = new User(user)
-
-      if (await real_user.save()) {
-
-
+      if (await user.save()) {
           await ForgotPassword.findOneAndDelete({ token })
       }
 
-
-      res.send({ success:{message: 'Fjalëkalimi u përditësua me sukses' }})
+      if (language==='en')  return res.status.send({success:{ message: 'Password updated successfully' }})
+      if (language==='al')  return res.status.send({success:{ message: 'Fjalëkalimi u përditësua me sukses' }})
+      if (language ==='de') return res.status.send({success:{ message: 'Passwort erfolgreich aktualisiert' }})
   } catch (e) {
       console.log(e)
-      return res.send({ errors:{message: 'Diçka shkoi keq fjalëkalimi nuk u përidtësua'}})
+      if (language==='en')  return res.status(400).send({errors:{ message: 'Something went wrong password was not updated' }})
+      if (language==='al')  return res.status(400).send({errors:{ message: 'Diçka shkoi keq fjalëkalimi nuk u përidtësua' }})
+      if (language ==='de') return res.status(400).send({errors:{ message: 'Es ist ein Fehler aufgetreten. Das Passwort wurde nicht aktualisiert' }})
   }
 }
 

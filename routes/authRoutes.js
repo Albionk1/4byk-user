@@ -75,8 +75,8 @@ router.post('/add-subscribe',upload.none(),authController.addSubscribe)
 router.post('/login-or-create-google',authController.loginOrCreateGoogle)
 router.post('/login-or-create-facebook',authController.loginOrCreateFacebook)
 //forget password
-router.post('/sendForgotPasswordEmail',routeLimiter, authController.sendForgotPasswordEmail)
-router.patch('/updateForgotedPassword', authController.updateForgotedPassword)
+router.post('/sendForgotPasswordEmail',upload.none(),routeLimiter, authController.sendForgotPasswordEmail)
+router.patch('/updateForgotedPassword',upload.none(),authController.updateForgotedPassword)
 //logout
 router.get('/logout',authController.logout)
 
