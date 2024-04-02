@@ -273,3 +273,22 @@ module.exports.searchUsers = async(req,res)=>{
     res.send({status:'fail',data:[]})
   }
 }
+
+module.exports.deleteAccount = async(req,res)=>{
+  try {  
+    const { email, password } = req.body
+      const user = await User.login(email, password)
+      if (user.deleted !== false) {
+        throw Error('incorrect password')
+      } else {
+        res.cookie('jwt', '', { httpOnly: true, maxAge: 1 })
+        user.deleted = true
+        await user.save()
+        res.send({status:'true',message:'deleted'})
+      }
+    } catch (e) {
+      const errors = handleErrors(e)
+      res.status(400).json({ errors })
+      
+    }
+}

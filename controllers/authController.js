@@ -11,7 +11,8 @@ const createToken = (id) => {
 const Follow = require('../models/followModel')
 const Message = require('../models/messageModel')
 const mongoose = require('mongoose')
-
+const ForgotPassword= require('../models/forgotPasswordModel')
+// const {sendForgotPasswordEmail} = require('../email')
 // const { uploadFile, getFileStream, deleteImage } = require('../aws')
 const { uploadFile, getFileStream, deleteImage } = require('../aws')
 const Subscribe = require('../models/subscripeModel')
@@ -699,6 +700,100 @@ module.exports.loginOrCreateFacebook = async(req,res)=>{
     const errors = handleErrors(e)
     console.log(e)
     res.send({err:errors,user:null})
+  }
+}
+
+module.exports.sendForgotPasswordEmail = async(req, res) => {
+  try {
+      const email = req.body.email
+
+      const user = await User.findOne({ email })
+
+      if (!user) {
+          return res.status(404).send({errors:{ message: 'Adresa elektronike është gabim' }})
+      }
+
+      const userAlreadyHasToken = await ForgotPassword.findOne({ user: user._id })
+
+      if (userAlreadyHasToken) {
+          return res.status(400).send({ errors:{ message: 'Kontrolloni postën elektornike ju kemi derguar një kod për këtë llogari' }})
+      }
+
+
+      const random = Math.random()
+      const token = random.toString().slice('2', '8')
+
+
+      const token_db = await ForgotPassword.create({
+          token,
+          user: user._id,
+          expire_date:Date.now()+ (20 * 60 * 1000)
+      })
+
+
+      if (!token_db) {
+          return res.status(400).send({ errors:{ message: 'Diçka shkoi keq kodi nuk u krijua' }})
+      }
+
+
+
+
+      sendForgotPasswordEmail(email, user.fullname, token)
+
+      res.send({ success:{ message: 'Emaili u dërgua me sukses' }})
+
+  } catch (error) {
+      res.status(500).send({
+          errors:{
+          message: 'This is a server error, check server console for more info',
+      }})
+
+  }
+}
+module.exports.updateForgotedPassword = async(req, res) => {
+  try {
+      const { token, password, confirm_password } = req.body
+
+      if (!password || !confirm_password || !token) {
+          return res.status(400).send({ errors:{ message: 'Të gjitha fushat janë të detyrueshme'} })
+      }
+
+      if (password !== confirm_password) {
+          return res.status(400).send({ errors:{message: 'Fjalëkalimet nuk përputhet' }})
+      }
+
+
+      const token_db = await ForgotPassword.findOne({ token }).populate('user')
+
+      if (!token_db) {
+          return res.status(404).send({ errors:{message: 'Kodi është gabim'}})
+      }
+      if(parseInt(token_db.expire_date)<Date.now()){
+        token_db.delete()
+        return res.status(404).send({ errors:{message: 'Kodi ka skaduar provo më vonë'}})
+      }
+
+
+      if (password.length < 6 || confirm_password.length < 6) {
+          return res.send({  errors:{message: 'Fjalëkalimi duhet të jet mes 6 dhe 50 karaktreve i gjat'}})
+      }
+
+      const user = token_db.user
+
+      user.password = password
+      const real_user = new User(user)
+
+      if (await real_user.save()) {
+
+
+          await ForgotPassword.findOneAndDelete({ token })
+      }
+
+
+      res.send({ success:{message: 'Fjalëkalimi u përditësua me sukses' }})
+  } catch (e) {
+      console.log(e)
+      return res.send({ errors:{message: 'Diçka shkoi keq fjalëkalimi nuk u përidtësua'}})
   }
 }
 
