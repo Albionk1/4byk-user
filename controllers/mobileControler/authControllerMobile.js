@@ -65,6 +65,9 @@ module.exports.login = async (req, res) => {
     const { email, password,fcm_token } = req.body
       const user = await User.login(email, password)
       if (user.isActive !== false) {
+        if(user.deleted){
+          throw Error('incorrect password')
+        }
         const token = createToken(user._id)
         if(!user.fcm_token.includes(fcm_token)&&fcm_token){
          user.fcm_token.push(fcm_token)
