@@ -457,7 +457,7 @@ module.exports.getMyFollowers = async(req,res)=>{
 }
 module.exports.getAllMyFollowing = async(req,res)=>{
   try{
-    const following = await Follow.find({userId:req.body.user}).select('_id')
+    const following = await Follow.find({userId:req.body.user}).select('friendId')
     res.send(following)
   }
   catch(e){
