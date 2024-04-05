@@ -154,7 +154,7 @@ app.use(socketMiddleware(socket))
       }
       if (!user.room && user.userId) {
         io.to(user.userId).emit('reciveMessageMobile', {myId:myId.toString(), message,offert:false })
-        io.to(user.userId).emit('reciveMessage', {myId:myId.toString(), message,offert:false })
+        io.to(user.userId).emit('reciveMessage', {myId:myId.toString(), message:message.message,offert:false })
       }
     }
     else{ 
