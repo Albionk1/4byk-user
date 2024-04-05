@@ -62,6 +62,8 @@ router.post('/follow',requireAuth,upload.none(),authController.follow)
 router.post('/get-follow-status',authController.getFollowStatus)
 router.post('/get-my-following',upload.none(),authController.getMyFollowing)
 router.post('/get-my-followers',upload.none(),authController.getMyFollowers)
+router.post('/get-my-following-auth',requireAuth,upload.none(),authController.getMyFollowingAuth)
+router.post('/get-my-followers-auth',requireAuth,upload.none(),authController.getMyFollowersAuth)
 router.post('/get-all-my-following',authController.getAllMyFollowing)
 router.post('/get-users-for-message',authController.getUsersForMessage)
 //statistic route

@@ -417,7 +417,31 @@ module.exports.getMyFollowing = async(req,res)=>{
   try{
     let pageNumber = parseInt(req.body.pageNumber)|| 0
     const user = req.body.user
-    const following = await Follow.find({userId:user}).populate('friendId','image full_name').skip(pageNumber*10).limit(10).lean()
+    const following = await Follow.find({userId:user}).populate('friendId','image full_name').lean().skip(pageNumber*10).limit(10)
+    const totalFollowers = await Follow.countDocuments({userId:user})
+    res.send({status:'success',following,totalFollowers})
+  }
+  catch(e){
+    res.send({status:'fail',followers:0,totalFollowers:0})
+  }
+}
+
+module.exports.getMyFollowers = async(req,res)=>{
+  try{
+    let pageNumber = parseInt(req.body.pageNumber)|| 0
+    const followers = await Follow.find({friendId:req.body.user}).populate('userId','image full_name').lean().skip(pageNumber).limit(10)
+    const totalFollowers = await Follow.countDocuments({friendId:req.body.user})
+    res.send({status:'success',followers,totalFollowers})
+  }
+  catch(e){
+    res.send({status:'fail',followers:0,totalFollowers:0})
+  }
+}
+module.exports.getMyFollowingAuth = async(req,res)=>{
+  try{
+    let pageNumber = parseInt(req.body.pageNumber)|| 0
+    const user = req.body.user
+    const following = await Follow.find({userId:user}).populate('friendId','image full_name').lean().skip(pageNumber*10).limit(10)
     if(req.user){
       for(let i =0;i<following.length;i++){
       const friendId=  following[i].friendId._id
@@ -435,10 +459,10 @@ module.exports.getMyFollowing = async(req,res)=>{
   }
 }
 
-module.exports.getMyFollowers = async(req,res)=>{
+module.exports.getMyFollowersAuth = async(req,res)=>{
   try{
     let pageNumber = parseInt(req.body.pageNumber)|| 0
-    const followers = await Follow.find({friendId:req.body.user}).populate('userId','image full_name').skip(pageNumber).limit(10)
+    const followers = await Follow.find({friendId:req.body.user}).populate('userId','image full_name').lean().skip(pageNumber).limit(10)
     if(req.user){
       for(let i =0;i<followers.length;i++){
       const friendId=  followers[i].userId._id
