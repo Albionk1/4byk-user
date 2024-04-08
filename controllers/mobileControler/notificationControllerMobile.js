@@ -59,7 +59,7 @@ module.exports.getNotifications=async(req,res)=>{
      if(date){
       filter.updatedAt ={$lte:date}
      }
-    const notifications = await Notification.find().sort({createdAt:-1}).limit(limit).lean().populate('by','full_name image')
+    const notifications = await Notification.find(filter).sort({createdAt:-1}).limit(limit).lean().populate('by','full_name image')
     const reelIds=[]
     for(let i =0;i<notifications.length;i++){
       userId.push(notifications[i].by)
