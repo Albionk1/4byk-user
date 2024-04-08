@@ -31,12 +31,12 @@ const handleErrors = (err) => {
          }
        }
     const send = await Message.create(obj)
-    res.send(send)
+    res.send({status:'success',message:send})
    }
    catch(e){
     console.log(e)
       const errors = handleErrors(e)
-      res.send({errors})
+      res.send({status:'fail',errors})
    }
  }
  module.exports.sendOffert=async(req,res)=>{
