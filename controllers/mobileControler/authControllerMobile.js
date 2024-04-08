@@ -150,7 +150,7 @@ module.exports.editProfilePic=async(req,res)=>{
       deleteImage(user.image)
        user.image = req.body.image
        await user.save()
-    res.send({status:'success',message:'Image updated'})
+    res.send({status:'success',message:'Image updated',image:req.body.image})
   }
   catch(e){
    res.send({status:'fail',message:"Image didn't updated"})
