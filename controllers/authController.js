@@ -501,8 +501,8 @@ const messages = await Message.aggregate([
   {
     $match: {
       $or: [
-        { $and: [{ by: new mongoose.Types.ObjectId(user) }, { offert: true }] }, // User writes an offer
-        { $and: [{ to: new mongoose.Types.ObjectId(user) }, { offert: true }] }   // User receives an offer
+         { by: new mongoose.Types.ObjectId(user) } , // User writes an offer
+         { to: new mongoose.Types.ObjectId(user) }   // User receives an offer
       ]
     }
   },
@@ -524,7 +524,6 @@ const messages = await Message.aggregate([
     }
   }
 ]);
-console.log(messages)
 messages.forEach(message => {
   if (message.users[0] !== user.toString()) {
     mutualFriendsIds.push(message.users[0]);
