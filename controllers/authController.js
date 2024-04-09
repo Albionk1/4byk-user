@@ -148,7 +148,7 @@ module.exports.addUser = async(req,res)=>{
 module.exports.updateUser = async(req,res)=>{
   try{
  const {full_name,country,email,password,acount_type,instagram_link,facebook_link,linkedIn_link,tiktok_link,gender,category,bio,phone_number,address} = req.body
- const user = await User.findByIdAndUpdate(req.user._id,{full_name,country,email,acount_type,instagram_link,facebook_link,linkedIn_link,tiktok_link,gender,category,bio,phone_number,address})
+ const user = await User.findByIdAndUpdate(req.user._id,{full_name,country,email,acount_type,instagram_link,facebook_link,linkedIn_link,tiktok_link,gender,category,bio,phone_number,address},{runValidators:true})
  if(password){
   user.password=password
   await user.save()
