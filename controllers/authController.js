@@ -141,6 +141,7 @@ module.exports.addUser = async(req,res)=>{
   }
   catch(e){
     const errors = handleErrors(e)
+    deleteImage(req.body.image)
       res.status(400).json({ errors })
   }
 }
