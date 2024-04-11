@@ -8,6 +8,7 @@ const createToken = (id) => {
     expiresIn: maxAge,
   })
 }
+const axios = require('axios')
 const Follow = require('../models/followModel')
 const Message = require('../models/messageModel')
 const mongoose = require('mongoose')
@@ -105,6 +106,7 @@ module.exports.getUserById = async(req,res)=>{
 module.exports.login = async (req, res) => {
     try {  
     const { email, password } = req.body
+    let liked
       const user = await User.login(email, password)
       if (user.isActive !== false) {
         if(user.deleted){
@@ -112,7 +114,15 @@ module.exports.login = async (req, res) => {
         }
         const token = createToken(user._id)
         res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 })
-        res.send({ data: { user },cookie:token })
+        if (process.env.NODE_ENV === 'development') {
+          const responsePost = await axios.get('http://localhost:3002/liked-product?id='+user._id);
+          liked = responsePost.data;
+      }
+      else {
+          const responsePost = await axios.post('https://four-buyk-post-f28d12848a02.herokuapp.com/liked-product?id='+user._id);
+          liked = responsePost.data;
+      }
+        res.send({ data: { user },cookie:token,liked })
       } else {
         throw Error('access')
       }
