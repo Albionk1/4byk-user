@@ -119,7 +119,7 @@ module.exports.login = async (req, res) => {
           liked = responsePost.data;
       }
       else {
-          const responsePost = await axios.post('https://four-buyk-post-f28d12848a02.herokuapp.com/liked-product?id='+user._id);
+          const responsePost = await axios.get('https://four-buyk-post-f28d12848a02.herokuapp.com/liked-product?id='+user._id);
           liked = responsePost.data;
       }
         res.send({ data: { user },cookie:token,liked })
