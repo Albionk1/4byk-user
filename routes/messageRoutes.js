@@ -48,8 +48,9 @@ router.post('/get-message',requireAuth,upload.none(),messageController.getMessag
 router.post('/get-message-notification',requireAuth,upload.none(),messageController.getMessageNotification)
 router.post('/get-message-notification-count',requireAuth,upload.none(),messageController.getMessageNotificationCount)
 router.post('/get-latest-message',requireAuth,upload.none(),messageController.getLatestMessage)
-
-
+router.get('/friends-for-message',messageController.getFriendsForMessage)
+router.get('/offerts-for-message',messageController.getOffertsForMessage)
+router.get('/non-friends-message',messageController.getNonFriendForMessage)
 
 
 

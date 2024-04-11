@@ -1,4 +1,5 @@
 const Message = require('../models/messageModel')
+const User = require('../models/userModel')
 const { filterObj, validMongoId ,getUser} = require('../utils')
 const mongoose = require('mongoose')
 
@@ -216,3 +217,124 @@ const handleErrors = (err) => {
     res.send({errors})
   }
  }
+
+ module.exports.getFriendsForMessage=async(req,res)=>{
+  try{
+    const user = req.query.user
+    const followers = await Follow.find({ friendId: user }).select('userId');
+const following = await Follow.find({ userId: user }).select('friendId');
+const followersIds = followers.map(follower => follower.userId.toString());
+const followingIds = following.map(follow => follow.friendId.toString());
+const mutualFriendsIds = followersIds.filter(id => followingIds.includes(id));
+const mutualFriends = await User.find({ _id: { $in: mutualFriendsIds } }).select('_id full_name image')
+res.send(mutualFriends)
+  }
+  catch(e){
+    res.send([])
+  }
+ }
+ module.exports.getOffertsForMessage=async(req,res)=>{
+  try{
+    const user = req.query.user
+const mutualFriendsIds = []
+const messages = await Message.aggregate([
+  {
+    $match: {
+      $or: [
+         { by: new mongoose.Types.ObjectId(user),offert:false } , // User writes an offer
+         { to: new mongoose.Types.ObjectId(user),offert:false }   // User receives an offer
+      ]
+    }
+  },
+  {
+    $group: {
+      _id: {
+        $cond: [
+          { $gte: ["$by", "$to"] },
+          { to: "$to", by: "$by" },
+          { to: "$by", by: "$to" }
+        ]
+      }
+    }
+  },
+  {
+    $project: {
+      _id: 0,
+      users: ["$_id.by", "$_id.to"]
+    }
+  }
+]);
+messages.forEach(message => {
+  for(let i =0;i<mutualFriendsIds.length;i++){
+    if(message.user[0].toString() ===mutualFriendsIds[i].toString() )mutualFriendsIds.splice(i, 1)
+    if(message.user[1].toString() ===mutualFriendsIds[i].toString() )mutualFriendsIds.splice(i, 1)
+  }
+});
+if(userForMessage){
+  if(!mutualFriendsIds.includes(userForMessage))mutualFriendsIds.push(userForMessage);
+}
+const mutualFriends = await User.find({$and: [
+  { _id: { $in: mutualFriendsIds } },
+  { _id: { $ne: user } } 
+]}).select('_id full_name image')
+res.send(mutualFriends)
+  }
+  catch(e){
+    res.send([])
+  }
+ }
+
+ module.exports.getNonFriendForMessage = async(req,res)=>{
+  try{
+    const user = req.query.user
+    const userForMessage = req.query.userForMessage
+    const followers = await Follow.find({ friendId: user }).select('userId');
+const following = await Follow.find({ userId: user }).select('friendId userId');
+const followersIds = followers.map(follower => follower.userId.toString());
+const followingIds = following.map(follow => follow.friendId.toString());
+const mutualFriendsIds = followersIds.filter(id => followingIds.includes(id));
+const messages = await Message.aggregate([
+  {
+    $match: {
+      $or: [
+         { by: new mongoose.Types.ObjectId(user),offert:false } ,
+         { to: new mongoose.Types.ObjectId(user),offert:false }   
+      ]
+    }
+  },
+  {
+    $group: {
+      _id: {
+        $cond: [
+          { $gte: ["$by", "$to"] },
+          { to: "$to", by: "$by" },
+          { to: "$by", by: "$to" }
+        ]
+      }
+    }
+  },
+  {
+    $project: {
+      _id: 0,
+      users: ["$_id.by", "$_id.to"]
+    }
+  }
+]);
+messages.forEach(message => {
+  if (message.users[0] !== user.toString()) {
+    mutualFriendsIds.push(message.users[0]);
+  }
+  if (message.users[1] !== user.toString()) {
+    mutualFriendsIds.push(message.users[1]);
+  }
+});
+if(userForMessage){
+  if(!mutualFriendsIds.includes(userForMessage))mutualFriendsIds.push(userForMessage);
+}
+const mutualFriends = await User.find({ _id: { $in: mutualFriendsIds } }).select('_id full_name image')
+res.send(mutualFriends)
+  }
+  catch(e){
+    res.send([])
+  }
+}
