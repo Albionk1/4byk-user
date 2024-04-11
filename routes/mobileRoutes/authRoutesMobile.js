@@ -51,4 +51,6 @@ router.post('/edit-bio',requireAuthMobile,authController.editBio)
 router.post('/get-users-for-message',requireAuthMobile,authController.getUsersForMessage)
 router.get('/search-users',authController.searchUsers)
 router.delete('/delete-account',authController.deleteAccount)
+router.post('/sendForgotPasswordEmail',routeLimiter, authController.sendForgotPasswordEmail)
+
 module.exports=router

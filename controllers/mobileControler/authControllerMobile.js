@@ -296,3 +296,66 @@ module.exports.deleteAccount = async(req,res)=>{
       
     }
 }
+
+module.exports.sendForgotPasswordEmail = async(req, res) => {
+  try {
+      const email = req.body.email
+let language 
+      const user = await User.findOne({ email })
+if (req.cookies.language && req.cookies.language.includes('en')) {
+  language = 'en'
+}
+
+if (req.cookies.language && req.cookies.language.includes('al')) {
+  language = 'al'
+}
+if (!req.cookies.language || req.cookies.language.includes('de')) {
+  language ='de'
+}
+      if (!user) {
+        if (language==='en')  return res.status(404).send({errors:{ message: 'Incorrect email address' }})
+      if (language==='al')  return res.status(404).send({errors:{ message: 'Adresa elektronike është gabim' }})
+      if (language ==='de') return res.status(404).send({errors:{ message: 'Falsche E-Mail Adresse' }})
+      }
+
+      const userAlreadyHasToken = await ForgotPassword.findOne({ user: user._id })
+
+      if (userAlreadyHasToken) {
+        if (language==='en')  return res.status(400).send({errors:{ message: 'Check your email We have sent you a code for this account' }})
+      if (language==='al')  return res.status(400).send({errors:{ message: 'Kontrolloni postën elektornike ju kemi derguar një kod për këtë llogari' }})
+      if (language ==='de') return res.status(400).send({errors:{ message: 'Überprüfen Sie Ihre E-Mails. Wir haben Ihnen einen Code für dieses Konto gesendet' }})
+      }
+
+
+      const random = Math.random()
+      const token = random.toString().slice('2', '8')
+
+
+      const token_db = await ForgotPassword.create({
+          token,
+          user: user._id,
+          expire_date:Date.now()+ (20 * 60 * 1000)
+      })
+
+
+      if (!token_db) {
+        if (language==='en')  return res.status(400).send({errors:{ message: 'Something went wrong code not generated' }})
+      if (language==='al')  return res.status(400).send({errors:{ message: 'Diçka shkoi keq kodi nuk u krijua' }})
+      if (language ==='de') return res.status(400).send({errors:{ message: 'Es ist ein Fehler aufgetreten. Der Code wurde nicht generiert' }})
+      }
+
+
+
+
+      sendForgotPasswordEmail(email, user.full_name, token)
+      if (language==='en')  return res.send({success:{ message: 'Email sent successfullyd' }})
+      if (language==='al')  return res.send({success:{ message: 'Emaili u dërgua me sukses' }})
+      if (language ==='de') return res.send({success:{ message: 'Email wurde erfolgreich Versendet' }})
+  } catch (error) {
+      res.status(500).send({
+          errors:{
+          message: 'This is a server error, check server console for more info',
+      }})
+
+  }
+}
