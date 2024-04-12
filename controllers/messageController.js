@@ -2,7 +2,7 @@ const Message = require('../models/messageModel')
 const User = require('../models/userModel')
 const { filterObj, validMongoId ,getUser} = require('../utils')
 const mongoose = require('mongoose')
-
+const Follow = require('../models/followModel')
 
 
 const handleErrors = (err) => {
@@ -42,7 +42,7 @@ const handleErrors = (err) => {
  }
  module.exports.sendOffert=async(req,res)=>{
   try{
-     const {to,message,offert_ref,title,image,price} =req.body
+     const {to,message,offert_ref,title,image,price,productId} =req.body
      let by = req.user._id
      const obj={by,to,message,offert_ref,title,image,price,offert:true}
      const user=getUser(to.toString())
@@ -241,8 +241,8 @@ const messages = await Message.aggregate([
   {
     $match: {
       $or: [
-         { by: new mongoose.Types.ObjectId(user),offert:false } , // User writes an offer
-         { to: new mongoose.Types.ObjectId(user),offert:false }   // User receives an offer
+         { by: new mongoose.Types.ObjectId(user),offert:true } , // User writes an offer
+         { to: new mongoose.Types.ObjectId(user),offert:true }   // User receives an offer
       ]
     }
   },
@@ -264,15 +264,11 @@ const messages = await Message.aggregate([
     }
   }
 ]);
+
 messages.forEach(message => {
-  for(let i =0;i<mutualFriendsIds.length;i++){
-    if(message.user[0].toString() ===mutualFriendsIds[i].toString() )mutualFriendsIds.splice(i, 1)
-    if(message.user[1].toString() ===mutualFriendsIds[i].toString() )mutualFriendsIds.splice(i, 1)
-  }
+  mutualFriendsIds.push(message.users[0])
+  mutualFriendsIds.push(message.users[1])
 });
-if(userForMessage){
-  if(!mutualFriendsIds.includes(userForMessage))mutualFriendsIds.push(userForMessage);
-}
 const mutualFriends = await User.find({$and: [
   { _id: { $in: mutualFriendsIds } },
   { _id: { $ne: user } } 
@@ -280,6 +276,7 @@ const mutualFriends = await User.find({$and: [
 res.send(mutualFriends)
   }
   catch(e){
+    console.log(e)
     res.send([])
   }
  }
@@ -321,11 +318,9 @@ const messages = await Message.aggregate([
   }
 ]);
 messages.forEach(message => {
-  if (message.users[0] !== user.toString()) {
-    mutualFriendsIds.push(message.users[0]);
-  }
-  if (message.users[1] !== user.toString()) {
-    mutualFriendsIds.push(message.users[1]);
+  for(let i =0;i<mutualFriendsIds.length;i++){
+    if(message.users[0].toString() ===mutualFriendsIds[i].toString() )mutualFriendsIds.splice(i, 1)
+    if(message.users[1].toString() ===mutualFriendsIds[i].toString() )mutualFriendsIds.splice(i, 1)
   }
 });
 if(userForMessage){

@@ -38,6 +38,9 @@ const messageSchema = new mongoose.Schema(
          message: `Status nuk është i saktë`,
        },
        default: 'delivered',
+    },
+    sold:{
+      type:Boolean
     }
   },
   {
