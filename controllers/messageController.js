@@ -347,3 +347,44 @@ res.send(mutualFriends)
     res.send([])
   }
 }
+module.exports.rejectOffert=async(req,res)=>{
+  try{
+    const {message,offert}= req.body
+    let data 
+    if (process.env.NODE_ENV === 'development') {
+      const response = await axios.post('http://localhost:3002/reject-offert', {offert})
+      data = response.data;
+    }
+    else {
+      const response = await axios.post('https://four-buyk-post-f28d12848a02.herokuapp.com/reject-offert', { offert})
+      data = response.data;
+    }
+    const msg = await Message.findByIdAndUpdate(message,{offert_res:true})
+    res.send({status:'success'})
+  }
+  catch(e){
+    res.send({status:'fail'})
+
+  }
+}
+
+module.exports.acceptOffert=async(req,res)=>{
+  try{
+    const {message,offert}= req.body
+    let data 
+    if (process.env.NODE_ENV === 'development') {
+      const response = await axios.post('http://localhost:3002/accept-sell', {offertId:offert})
+      data = response.data;
+    }
+    else {
+      const response = await axios.post('https://four-buyk-post-f28d12848a02.herokuapp.com/accept-sell', { offertId:offert})
+      data = response.data;
+    }
+    const msg = await Message.findByIdAndUpdate(message,{offert_res:true})
+    res.send({status:'success'})
+
+  }
+  catch(e){
+    res.send({status:'fail'})
+  }
+}

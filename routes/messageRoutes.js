@@ -51,8 +51,8 @@ router.post('/get-latest-message',requireAuth,upload.none(),messageController.ge
 router.get('/friends-for-message',messageController.getFriendsForMessage)
 router.get('/offerts-for-message',messageController.getOffertsForMessage)
 router.get('/non-friends-message',messageController.getNonFriendForMessage)
-
-
+router.post('/reject-offert',upload.none(),messageController.rejectOffert)
+router.post('/accept-offert',upload.none(),messageController.acceptOffert)
 
 
 

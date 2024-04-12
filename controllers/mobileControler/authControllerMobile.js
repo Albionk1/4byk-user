@@ -11,7 +11,8 @@ const Follow = require('../../models/followModel')
 const Message = require('../../models/messageModel')
 const { uploadFile, getFileStream, deleteImage } = require('../../aws')
 const mongoose = require('mongoose')
-
+const ForgotPassword= require('../../models/forgotPasswordModel')
+const {sendForgotPasswordEmail} = require('../../email')
 const handleErrors = (err) => {
   let errors = {}
   // incorrect email in login form

@@ -39,7 +39,7 @@ const messageSchema = new mongoose.Schema(
        },
        default: 'delivered',
     },
-    sold:{
+    offert_res:{
       type:Boolean
     }
   },

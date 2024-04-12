@@ -94,16 +94,16 @@ module.exports.follow = async(req,res)=>{
  }
  
  module.exports.getMyFollowing = async(req,res)=>{
-   try{
-     let pageNumber = parseInt(req.query.pageNumber)|| 0
-     const following = await Follow.find({userId:req.user._id}).skip(pageNumber*10).limit(10)
-     const totalFollowers = await Follow.countDocuments({userId:req.user._id})
-     res.send({status:'success',following,totalFollowers})
-   }
-   catch(e){
-     res.send({status:'fail',followers:0,totalFollowers:0})
-   }
- }
+  try{
+    let pageNumber = parseInt(req.query.pageNumber)|| 0
+    const following = await Follow.find({userId:req.user._id}).skip(pageNumber*10).limit(10)
+    const totalFollowers = await Follow.countDocuments({userId:req.user._id})
+    res.send({status:'success',following,totalFollowers})
+  }
+  catch(e){
+    res.send({status:'fail',followers:0,totalFollowers:0})
+  }
+}
  
  module.exports.getMyFollowers = async(req,res)=>{
    try{
@@ -126,6 +126,47 @@ module.exports.follow = async(req,res)=>{
    }
  }
 
+ module.exports.getMyFollowingAuth = async(req,res)=>{
+  try{
+    let pageNumber = parseInt(req.body.pageNumber)|| 0
+    const user = req.user._id
+    const following = await Follow.find({userId:user}).populate('friendId','image full_name').lean().skip(pageNumber*10).limit(10)
+    if(req.user){
+      for(let i =0;i<following.length;i++){
+      const friendId=  following[i].friendId._id
+      const followingS = await Follow.exists({ userId: req.user._id, friendId: friendId });
+    const followerS = await Follow.exists({ friendId: req.user._id, userId: friendId });
+    following[i].friendId.following=followingS?true:false
+    following[i].friendId.follower=followerS?true:false
+      }
+    }
+    const totalFollowers = await Follow.countDocuments({userId:user})
+    res.send({status:'success',following,totalFollowers})
+  }
+  catch(e){
+    res.send({status:'fail',followers:0,totalFollowers:0})
+  }
+}
+module.exports.getMyFollowersAuth = async(req,res)=>{
+  try{
+    let pageNumber = parseInt(req.body.pageNumber)|| 0
+    const followers = await Follow.find({friendId:req.user._id}).populate('userId','image full_name').lean().skip(pageNumber).limit(10)
+    if(req.user){
+      for(let i =0;i<followers.length;i++){
+      const friendId=  followers[i].userId._id
+      const followingS = await Follow.exists({ userId: req.user._id, friendId: friendId });
+    const followerS = await Follow.exists({ friendId: req.user._id, userId: friendId });
+    followers[i].userId.following=followingS?true:false
+    followers[i].userId.follower=followerS?true:false
+      }
+    }
+    const totalFollowers = await Follow.countDocuments({friendId:req.body.user})
+    res.send({status:'success',followers,totalFollowers})
+  }
+  catch(e){
+    res.send({status:'fail',followers:0,totalFollowers:0})
+  }
+}
  module.exports.getUsers =async(req,res) =>{
   try{
     let limit = parseInt(req.query.limit) || 10;
