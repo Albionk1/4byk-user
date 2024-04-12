@@ -3,6 +3,7 @@ const User = require('../models/userModel')
 const { filterObj, validMongoId ,getUser} = require('../utils')
 const mongoose = require('mongoose')
 const Follow = require('../models/followModel')
+const axios = require('axios')
 
 
 const handleErrors = (err) => {
@@ -43,16 +44,29 @@ const handleErrors = (err) => {
  module.exports.sendOffert=async(req,res)=>{
   try{
      const {to,message,offert_ref,title,image,price,productId} =req.body
-     let by = req.user._id
-     const obj={by,to,message,offert_ref,title,image,price,offert:true}
-     const user=getUser(to.toString())
-     if (user) {
-        if(user.room==[to, by].join('')){
-           obj.status='seen'
-        }
-      }
-   const send = await Message.create(obj)
+     let data
+     if (process.env.NODE_ENV === 'development') {
+      const response = await axios.post('http://localhost:3002/make-offert', {user:req.user._id,product:productId })
+      data = response.data;
+    }
+    else {
+      const response = await axios.post('https://four-buyk-post-f28d12848a02.herokuapp.com/make-offert', { user:req.user._id,product:productId })
+      data = response.data;
+    }
+    if(data.status==='success'){
+      console.log('offert',data.offert)
+      let by = req.user._id
+      const obj={by,to,message,offert_ref,title,image,price,offert:true,offert_ref:data.offert}
+      const user=getUser(to.toString())
+      if (user) {
+         if(user.room==[to, by].join('')){
+            obj.status='seen'
+         }
+       }
+    const send = await Message.create(obj)
    res.send({status:'success',send})
+    }
+   res.send({status:'fail'})
   }
   catch(e){
    console.log(e)
