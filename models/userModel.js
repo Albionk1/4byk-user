@@ -158,7 +158,36 @@ const userSchema = new mongoose.Schema(
     fcm_token: [{
       type: String,
       default: "",
-    }]
+    }] ,ratings: [
+      {
+          user: {
+              type: mongoose.Schema.ObjectId,
+              ref: 'User'
+          },
+          full_name:{
+            type: String,
+          },
+          value: {
+              type: Number,
+              required: true
+          },
+          title:{
+            type: String,
+            maxlength: [50, "titulli nuk munde te jet ma i gjate se 50"],
+          },
+          message: {
+              type: String,
+              maxlength: [255, "Message nuk munde te jet ma i gjate se 255"],
+          },
+          created: {
+            type: Date, default: Date.now 
+        }
+      }
+  ],
+    rating:{
+  type:Number,
+  default:0
+    },
   },
   {
     timestamps: true,

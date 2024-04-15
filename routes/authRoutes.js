@@ -79,6 +79,9 @@ router.post('/login-or-create-facebook',authController.loginOrCreateFacebook)
 //forget password
 router.post('/sendForgotPasswordEmail',upload.none(),routeLimiter, authController.sendForgotPasswordEmail)
 router.patch('/updateForgotedPassword',upload.none(),authController.updateForgotedPassword)
+// rate user
+router.post('/rate-user',upload.none(),requireAuth,authController.rateUser)
+
 //logout
 router.get('/logout',authController.logout)
 

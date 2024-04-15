@@ -871,7 +871,37 @@ if (!req.cookies.language || req.cookies.language.includes('de')) {
       if (language ==='de') return res.status(400).send({errors:{ message: 'Es ist ein Fehler aufgetreten. Das Passwort wurde nicht aktualisiert' }})
   }
 }
+module.exports.rateUser = async (req, res) => {
+  try {
+    const { id, value, message, title } = req.body
+    const user = await User.findOne({ _id: id, deleted: false })
+    if (user) {
+      const ratingIndex = user.ratings.findIndex(rating => rating.user.toString() === req.user._id.toString());
+      if (ratingIndex === -1) {
+        const newRating = {
+          user: req.user._id,
+          value,
+          message,
+          title,
+          full_name: req.user.full_name
+        };
+        user.ratings.push(newRating);
+        await user.save();
+        const totalRating = user.ratings.reduce((acc, rating) => acc + rating.value, 0);
+        user.rating = (totalRating / user.ratings.length).toFixed(1);
+        await user.save()
+        return res.send({ status: 'success', message: 'rated succesfully', rate: newRating })
+      }
+      return res.send({ status: 'fail', message: 'You have already rated' })
+    }
+    return res.send({ status: 'fail', message: 'Product not found' })
+  }
+  catch (e) {
+    const errors = handleErrors(e)
+    res.send({ status: 'fail', errors })
 
+  }
+}
 module.exports.logout = (req, res) => {
   res.cookie('jwt', '', { maxAge: 1 })
   res.redirect('/login')
