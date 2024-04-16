@@ -271,8 +271,59 @@ module.exports.getFriendsForMessage=async(req,res)=>{
 const following = await Follow.find({ userId: user }).select('friendId');
 const followersIds = followers.map(follower => follower.userId.toString());
 const followingIds = following.map(follow => follow.friendId.toString());
-const mutualFriendsIds = followersIds.filter(id => followingIds.includes(id));
-const mutualFriends = await User.find({ _id: { $in: mutualFriendsIds } }).select('_id full_name image')
+const mutualFriendsIds = followersIds.filter(id => followingIds.includes(id) && id !== user);
+// const mutualFriends = await User.find({ _id: { $in: mutualFriendsIds } }).select('_id full_name image')
+const message = await Message.aggregate([
+  {
+    $match: {
+      $or:[
+        {
+          to: { $in: mutualFriendsIds },
+          by: new mongoose.Types.ObjectId(req.user._id)
+        },
+        {
+          by: { $in: mutualFriendsIds },
+          to: new mongoose.Types.ObjectId(req.user._id)
+        }
+      ]
+    }
+  }, 
+  {
+    $sort: {
+      createdAt: -1
+    }
+  },
+  {
+    $group: {
+      _id: "$by",
+      message: { $first: "$message" },
+      status: { $first: "$status" },
+      createdAt: { $first: "$createdAt" },
+      by: { $first: "$by" }, 
+      to: { $first: "$to" } 
+    }
+  },
+  {
+    $lookup: {
+      from: "users", 
+      localField: "_id",
+      foreignField: "_id",
+      as: "user"
+    }
+  },
+  {
+    $project: {
+      _id: 1,
+      message: 1,
+      status: 1,
+      by: 1,
+      to: 1,
+      createdAt: 1,
+      full_name: { $arrayElemAt: ["$user.full_name", 0] },
+      image: { $arrayElemAt: ["$user.image", 0] }
+    }
+  }
+]);
 res.send({status:'success',data:mutualFriends})
   }
   catch(e){
@@ -315,11 +366,62 @@ messages.forEach(message => {
   mutualFriendsIds.push(message.users[0])
   mutualFriendsIds.push(message.users[1])
 });
-const mutualFriends = await User.find({$and: [
-  { _id: { $in: mutualFriendsIds } },
-  { _id: { $ne: user } } 
-]}).select('_id full_name image')
-res.send({status:'success',data:mutualFriends})
+// const mutualFriends = await User.find({$and: [
+//   { _id: { $in: mutualFriendsIds } },
+//   { _id: { $ne: user } } 
+// ]}).select('_id full_name image')
+const message = await Message.aggregate([
+  {
+    $match: {
+      $or:[
+        {
+          to: { $in: mutualFriendsIds },
+          by: new mongoose.Types.ObjectId(req.user._id)
+        },
+        {
+          by: { $in: mutualFriendsIds },
+          to: new mongoose.Types.ObjectId(req.user._id)
+        }
+      ]
+    }
+  }, 
+  {
+    $sort: {
+      createdAt: -1
+    }
+  },
+  {
+    $group: {
+      _id: "$by",
+      message: { $first: "$message" },
+      status: { $first: "$status" },
+      createdAt: { $first: "$createdAt" },
+      by: { $first: "$by" }, 
+      to: { $first: "$to" } 
+    }
+  },
+  {
+    $lookup: {
+      from: "users", 
+      localField: "_id",
+      foreignField: "_id",
+      as: "user"
+    }
+  },
+  {
+    $project: {
+      _id: 1,
+      message: 1,
+      status: 1,
+      by: 1,
+      to: 1,
+      createdAt: 1,
+      full_name: { $arrayElemAt: ["$user.full_name", 0] },
+      image: { $arrayElemAt: ["$user.image", 0] }
+    }
+  }
+]);
+res.send({status:'success',data:message})
   }
   catch(e){
     console.log(e)
@@ -372,8 +474,59 @@ messages.forEach(message => {
 if(userForMessage){
   if(!mutualFriendsIds.includes(userForMessage))mutualFriendsIds.push(userForMessage);
 }
-const mutualFriends = await User.find({ _id: { $in: mutualFriendsIds } }).select('_id full_name image')
-res.send({status:'success',data:mutualFriends})
+// const mutualFriends = await User.find({ _id: { $in: mutualFriendsIds } }).select('_id full_name image')
+const message = await Message.aggregate([
+  {
+    $match: {
+      $or:[
+        {
+          to: { $in: mutualFriendsIds },
+          by: new mongoose.Types.ObjectId(req.user._id)
+        },
+        {
+          by: { $in: mutualFriendsIds },
+          to: new mongoose.Types.ObjectId(req.user._id)
+        }
+      ]
+    }
+  }, 
+  {
+    $sort: {
+      createdAt: -1
+    }
+  },
+  {
+    $group: {
+      _id: "$by",
+      message: { $first: "$message" },
+      status: { $first: "$status" },
+      createdAt: { $first: "$createdAt" },
+      by: { $first: "$by" }, 
+      to: { $first: "$to" } 
+    }
+  },
+  {
+    $lookup: {
+      from: "users", 
+      localField: "_id",
+      foreignField: "_id",
+      as: "user"
+    }
+  },
+  {
+    $project: {
+      _id: 1,
+      message: 1,
+      status: 1,
+      by: 1,
+      to: 1,
+      createdAt: 1,
+      full_name: { $arrayElemAt: ["$user.full_name", 0] },
+      image: { $arrayElemAt: ["$user.image", 0] }
+    }
+  }
+]);
+res.send({status:'success',data:message})
   }
   catch(e){
     res.send({status:'fail',data:[]})
