@@ -51,7 +51,9 @@ router.get('/get-message-notification-count',requireAuthMobile,messageController
 router.get('/get-latest-message',requireAuthMobile,messageController.getLatestMessage)
 router.post('/reject-offert',messageController.rejectOffert)
 router.post('/accept-offert',messageController.acceptOffert)
-
+router.get('/friends-for-message',requireAuthMobile,messageController.getFriendsForMessage)
+router.get('/offerts-for-message',requireAuthMobile,messageController.getOffertsForMessage)
+router.get('/non-friends-message',requireAuthMobile,messageController.getNonFriendForMessage)
 
 
 
