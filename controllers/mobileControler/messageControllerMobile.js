@@ -62,21 +62,18 @@ const handleErrors = (err) => {
 }
  module.exports.getMessage=async(req,res)=>{
    try{
-      const {to} =req.query
-      var page=req.query.page
-      if(!page){
-         page=0
+      const {to,date} =req.query
+      const limit=15
+      let filter ={ $or: [ { by:req.user._id,to  }, { by: to,to:req.user._id  } ]}
+      if(date){
+        filter.updatedAt ={$lte:date}
       }
-      const limit=20
-      const skip = page  * limit;
-    const send = await Message.find({  $or: [ { by:req.user._id,to  }, { by: to,to:req.user._id  } ] }).skip(skip).limit(limit).sort({createdAt:-1})
+    const send = await Message.find(filter).limit(limit).sort({createdAt:-1})
     const ids=[]
-    for(var i =0;i<send.length;i++){
+    for(let i =0;i<send.length;i++){
         ids.push(send[i]._id)
     }
-    if(page==0){
-    await Message.updateMany({ by: to,to:req.user._id  },{$set: { status: 'seen' } })
-   }
+    await Message.updateMany({_id:{$in:ids},status:'delivered'},{$set: { status: 'seen' } })
     res.send(send)
    }
    catch(e){
@@ -273,17 +270,18 @@ const followersIds = followers.map(follower => follower.userId.toString());
 const followingIds = following.map(follow => follow.friendId.toString());
 const mutualFriendsIds = followersIds.filter(id => followingIds.includes(id) && id !== user);
 const mutualFriends = await User.find({ _id: { $in: mutualFriendsIds } }).select('_id full_name image').lean()
+let friends=[]
 const message = await Message.aggregate([
   {
     $match: {
       $or:[
         {
           to: { $in: mutualFriendsIds },
-          // by: new mongoose.Types.ObjectId(req.user._id)
+          by: new mongoose.Types.ObjectId(req.user._id)
         },
         {
           by: { $in: mutualFriendsIds },
-          // to: new mongoose.Types.ObjectId(req.user._id)
+          to: new mongoose.Types.ObjectId(req.user._id)
         }
       ]
     }
@@ -320,10 +318,11 @@ for(let i=0;i<message.length;i++){
       mutualFriends[a].message=message[i].message
       mutualFriends[a].createdAt=message[i].createdAt
       mutualFriends[a].status=message[i].status
+      friends.push(mutualFriends[a])
     }
   }
 }
-res.send({status:'success',data:mutualFriends})
+res.send({status:'success',data:friends})
   }
   catch(e){
     res.send({status:'fail',data:[]})
