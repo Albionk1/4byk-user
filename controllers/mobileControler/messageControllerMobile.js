@@ -271,20 +271,25 @@ const followingIds = following.map(follow => follow.friendId.toString());
 const mutualFriendsIds = followersIds.filter(id => followingIds.includes(id) && id !== user);
 const mutualFriends = await User.find({ _id: { $in: mutualFriendsIds } }).select('_id full_name image').lean()
 let friends=[]
+const mutualFriendsIdsObjectIds = mutualFriendsIds.map(id => new mongoose.Types.ObjectId(id));
+let filter = {
+  $or:[
+    {
+      by: new mongoose.Types.ObjectId(req.user._id),
+      to: { $in: mutualFriendsIdsObjectIds }
+    },
+    {
+      by: { $in: mutualFriendsIdsObjectIds },
+      to: new mongoose.Types.ObjectId(req.user._id)
+    }
+  ]
+}
+if(req.query.date){
+  filter.updatedAt={ $lte: req.query.date }
+}
 const message = await Message.aggregate([
   {
-    $match: {
-      $or:[
-        {
-          to: { $in: mutualFriendsIds },
-          by: new mongoose.Types.ObjectId(req.user._id)
-        },
-        {
-          by: { $in: mutualFriendsIds },
-          to: new mongoose.Types.ObjectId(req.user._id)
-        }
-      ]
-    }
+    $match: filter
   }, 
   {
     $sort: {
@@ -297,6 +302,7 @@ const message = await Message.aggregate([
       message: { $first: "$message" },
       status: { $first: "$status" },
       createdAt: { $first: "$createdAt" },
+      updatedAt: { $first: "$updatedAt" },
       by: { $first: "$by" }, 
       to: { $first: "$to" } 
     }
@@ -309,9 +315,14 @@ const message = await Message.aggregate([
       by: 1,
       to: 1,
       createdAt: 1,
+      updatedAt: 1,
     }
+  },
+  {
+    $limit:15
   }
 ]);
+// console.log(message)
 for(let i=0;i<message.length;i++){
   for(let a =0;a<mutualFriends.length;a++){
     if(message[i]._id.toString()===mutualFriends[a]._id.toString()){
@@ -332,14 +343,18 @@ res.send({status:'success',data:friends})
   try{
     const user = req.user._id
 const mutualFriendsIds = []
+let filter = {
+  $or: [
+     { by: new mongoose.Types.ObjectId(user),offert:true } , // User writes an offer
+     { to: new mongoose.Types.ObjectId(user),offert:true }   // User receives an offer
+  ]
+}
+if(req.query.date){
+  filter.updatedAt={ $lte: req.query.date }
+}
 const messages = await Message.aggregate([
   {
-    $match: {
-      $or: [
-         { by: new mongoose.Types.ObjectId(user),offert:true } , // User writes an offer
-         { to: new mongoose.Types.ObjectId(user),offert:true }   // User receives an offer
-      ]
-    }
+    $match: filter
   },
   {
     $group: {
@@ -353,6 +368,9 @@ const messages = await Message.aggregate([
     }
   },
   {
+    $limit: 15
+  },
+  {
     $project: {
       _id: 0,
       users: ["$_id.by", "$_id.to"]
@@ -364,20 +382,22 @@ messages.forEach(message => {
   mutualFriendsIds.push(message.users[0])
   mutualFriendsIds.push(message.users[1])
 });
-const mutualFriends = await User.find({$and: [
-  { _id: { $in: mutualFriendsIds } },
-  { _id: { $ne: user } } 
-]}).select('_id full_name image').lean()
 const message = await Message.aggregate([
   {
     $match: {
       $or:[
         {
-          to: { $in: mutualFriendsIds },
+       $and: [
+            { to: { $in: mutualFriendsIds } },
+            { to: { $ne: user } } 
+          ],
           by: new mongoose.Types.ObjectId(req.user._id)
         },
         {
-          by: { $in: mutualFriendsIds },
+          $and: [
+            { by: { $in: mutualFriendsIds } },
+            { by: { $ne: user } } 
+          ],
           to: new mongoose.Types.ObjectId(req.user._id)
         }
       ]
@@ -394,8 +414,17 @@ const message = await Message.aggregate([
       message: { $first: "$message" },
       status: { $first: "$status" },
       createdAt: { $first: "$createdAt" },
+      updatedAt: { $first: "$updatedAt" },
       by: { $first: "$by" }, 
       to: { $first: "$to" } 
+    }
+  },
+  {
+    $lookup: {
+      from: "users", 
+      localField: "_id",
+      foreignField: "_id",
+      as: "user"
     }
   },
   {
@@ -406,19 +435,22 @@ const message = await Message.aggregate([
       by: 1,
       to: 1,
       createdAt: 1,
+      updatedAt: 1,
+      full_name: { $arrayElemAt: ["$user.full_name", 0] },
+      image: { $arrayElemAt: ["$user.image", 0] }
     }
   }
 ]);
-for(let i=0;i<message.length;i++){
-  for(let a =0;a<mutualFriends.length;a++){
-    if(message[i]._id.toString()===mutualFriends[a]._id.toString()){
-      mutualFriends[a].message=message[i].message
-      mutualFriends[a].createdAt=message[i].createdAt
-      mutualFriends[a].status=message[i].status
-    }
-  }
-}
-res.send({status:'success',data:mutualFriends})
+// for(let i=0;i<message.length;i++){
+//   for(let a =0;a<mutualFriends.length;a++){
+//     if(message[i]._id.toString()===mutualFriends[a]._id.toString()){
+//       mutualFriends[a].message=message[i].message
+//       mutualFriends[a].createdAt=message[i].createdAt
+//       mutualFriends[a].status=message[i].status
+//     }
+//   }
+// }
+res.send({status:'success',data:message})
   }
   catch(e){
     console.log(e)
@@ -434,15 +466,21 @@ res.send({status:'success',data:mutualFriends})
 const following = await Follow.find({ userId: user }).select('friendId userId');
 const followersIds = followers.map(follower => follower.userId.toString());
 const followingIds = following.map(follow => follow.friendId.toString());
+let nonFriends =[]
 const mutualFriendsIds = followersIds.filter(id => followingIds.includes(id));
+const mutualFriendsIdsObjectIds = mutualFriendsIds.map(id => new mongoose.Types.ObjectId(id));
+let filter = {
+  $or: [
+     { by: new mongoose.Types.ObjectId(user),offert:false,to:{$nin:mutualFriendsIdsObjectIds} } ,
+     { to: new mongoose.Types.ObjectId(user),offert:false,by:{$nin:mutualFriendsIdsObjectIds} }   
+  ]
+}
+if(req.query.date){
+  filter.updatedAt={ $lte: req.query.date }
+}
 const messages = await Message.aggregate([
   {
-    $match: {
-      $or: [
-         { by: new mongoose.Types.ObjectId(user),offert:false } ,
-         { to: new mongoose.Types.ObjectId(user),offert:false }   
-      ]
-    }
+    $match: filter
   },
   {
     $group: {
@@ -456,6 +494,14 @@ const messages = await Message.aggregate([
     }
   },
   {
+    $sort: {
+      createdAt: -1
+    }
+  },
+  {
+    $limit: 15
+  },
+  {
     $project: {
       _id: 0,
       users: ["$_id.by", "$_id.to"]
@@ -463,25 +509,21 @@ const messages = await Message.aggregate([
   }
 ]);
 messages.forEach(message => {
-  for(let i =0;i<mutualFriendsIds.length;i++){
-    if(message.users[0].toString() ===mutualFriendsIds[i].toString() )mutualFriendsIds.splice(i, 1)
-    if(message.users[1].toString() ===mutualFriendsIds[i].toString() )mutualFriendsIds.splice(i, 1)
-  }
+if(message.users[0].toString()!==req.user._id.toString())nonFriends.push(message.users[0].toString())
+if(message.users[1].toString()!==req.user._id.toString())nonFriends.push(message.users[1].toString())
 });
-if(userForMessage){
-  if(!mutualFriendsIds.includes(userForMessage))mutualFriendsIds.push(userForMessage);
-}
-const mutualFriends = await User.find({ _id: { $in: mutualFriendsIds } }).select('_id full_name image').lean()
+
+const nonmutualFriendsIdsObjectIds = nonFriends.map(id => new mongoose.Types.ObjectId(id));
 const message = await Message.aggregate([
   {
     $match: {
       $or:[
+        // {
+        //   to: { $in: nonmutualFriendsIdsObjectIds },
+        //   by: new mongoose.Types.ObjectId(req.user._id)
+        // },
         {
-          to: { $in: mutualFriendsIds },
-          by: new mongoose.Types.ObjectId(req.user._id)
-        },
-        {
-          by: { $in: mutualFriendsIds },
+          by: { $in: nonmutualFriendsIdsObjectIds },
           to: new mongoose.Types.ObjectId(req.user._id)
         }
       ]
@@ -503,6 +545,14 @@ const message = await Message.aggregate([
     }
   },
   {
+    $lookup: {
+      from: "users", 
+      localField: "_id",
+      foreignField: "_id",
+      as: "user"
+    }
+  },
+  {
     $project: {
       _id: 1,
       message: 1,
@@ -510,19 +560,17 @@ const message = await Message.aggregate([
       by: 1,
       to: 1,
       createdAt: 1,
+      updatedAt: 1,
+      full_name: { $arrayElemAt: ["$user.full_name", 0] },
+      image: { $arrayElemAt: ["$user.image", 0] }
     }
   }
 ]);
-for(let i=0;i<message.length;i++){
-  for(let a =0;a<mutualFriends.length;a++){
-    if(message[i]._id.toString()===mutualFriends[a]._id.toString()){
-      mutualFriends[a].message=message[i].message
-      mutualFriends[a].createdAt=message[i].createdAt
-      mutualFriends[a].status=message[i].status
-    }
-  }
+if(userForMessage){
+  const user = await User.findById(userForMessage).select('full_name image')
+  message.push(user)
 }
-res.send({status:'success',data:mutualFriends})
+res.send({status:'success',data:message})
   }
   catch(e){
     res.send({status:'fail',data:[]})
