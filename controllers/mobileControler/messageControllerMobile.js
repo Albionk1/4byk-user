@@ -395,9 +395,7 @@ messages.forEach(message => {
   mutualFriendsIds.push(message.users[0])
   mutualFriendsIds.push(message.users[1])
 });
-const message = await Message.aggregate([
-  {
-    $match: {
+const filter1={
       $or:[
         {
        $and: [
@@ -415,45 +413,57 @@ const message = await Message.aggregate([
         }
       ]
     }
-  }, 
-  {
-    $group: {
-      _id: "$by",
-      message: { $last: "$message" },
-      status: { $last: "$status" },
-      createdAt: { $last: "$createdAt" },
-      updatedAt: { $last: "$updatedAt" },
-      by: { $first: "$by" }, 
-      to: { $first: "$to" } 
-    }
-  },
-  {
-    $sort: {
-      updatedAt: -1
-    }
-  },
-  {
-    $lookup: {
-      from: "users", 
-      localField: "_id",
-      foreignField: "_id",
-      as: "user"
-    }
-  },
-  {
-    $project: {
-      _id: 1,
-      message: 1,
-      status: 1,
-      by: 1,
-      to: 1,
-      createdAt: 1,
-      updatedAt: 1,
-      full_name: { $arrayElemAt: ["$user.full_name", 0] },
-      image: { $arrayElemAt: ["$user.image", 0] }
-    }
-  }
-]);
+    const message = await Message.aggregate([
+      {
+        $match: filter1
+      },
+      {
+        $group: {
+          _id: { $cond: [{ $eq: ["$by", new mongoose.Types.ObjectId(req.user._id)] }, "$to", "$by"] }, // Group by the recipient's or sender's ID
+          message: { $last: "$message" },
+          status: { $last: "$status" },
+          createdAt: { $last: "$createdAt" },
+          updatedAt: { $last: "$updatedAt" },
+          by: { $last: "$by" },
+          to: { $last: "$to" }
+        }
+      },
+      {
+        $sort: {
+          createdAt: -1
+        }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "_id",
+          foreignField: "_id",
+          as: "user"
+        }
+      },
+      {
+        $unwind: {
+          path: "$user",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $project: {
+          _id: 1,
+          message: 1,
+          status: 1,
+          by: 1,
+          to: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          full_name: { $ifNull: ["$user.full_name", "Unknown"] },
+          image: { $ifNull: ["$user.image", "default_image_url"] }
+        }
+      },
+      {
+        $limit: 15
+      }
+    ])
 // for(let i=0;i<message.length;i++){
 //   for(let a =0;a<mutualFriends.length;a++){
 //     if(message[i]._id.toString()===mutualFriends[a]._id.toString()){
