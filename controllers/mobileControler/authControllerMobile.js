@@ -301,18 +301,8 @@ module.exports.deleteAccount = async(req,res)=>{
 module.exports.sendForgotPasswordEmail = async(req, res) => {
   try {
       const email = req.body.email
-let language 
+let language = req.body.language||'de'
       const user = await User.findOne({ email })
-if (req.cookies.language && req.cookies.language.includes('en')) {
-  language = 'en'
-}
-
-if (req.cookies.language && req.cookies.language.includes('al')) {
-  language = 'al'
-}
-if (!req.cookies.language || req.cookies.language.includes('de')) {
-  language ='de'
-}
       if (!user) {
         if (language==='en')  return res.status(404).send({errors:{ message: 'Incorrect email address' }})
       if (language==='al')  return res.status(404).send({errors:{ message: 'Adresa elektronike është gabim' }})
@@ -322,9 +312,14 @@ if (!req.cookies.language || req.cookies.language.includes('de')) {
       const userAlreadyHasToken = await ForgotPassword.findOne({ user: user._id })
 
       if (userAlreadyHasToken) {
-        if (language==='en')  return res.status(400).send({errors:{ message: 'Check your email We have sent you a code for this account' }})
-      if (language==='al')  return res.status(400).send({errors:{ message: 'Kontrolloni postën elektornike ju kemi derguar një kod për këtë llogari' }})
-      if (language ==='de') return res.status(400).send({errors:{ message: 'Überprüfen Sie Ihre E-Mails. Wir haben Ihnen einen Code für dieses Konto gesendet' }})
+        if(userAlreadyHasToken.expire_date>Date.now().toString()){
+          if (language==='en')  return res.status(400).send({errors:{ message: 'Check your email We have sent you a code for this account' }})
+          if (language==='al')  return res.status(400).send({errors:{ message: 'Kontrolloni postën elektornike ju kemi derguar një kod për këtë llogari' }})
+          if (language ==='de') return res.status(400).send({errors:{ message: 'Überprüfen Sie Ihre E-Mails. Wir haben Ihnen einen Code für dieses Konto gesendet' }})
+        }
+      else{
+        await userAlreadyHasToken.deleteOne()
+      }
       }
 
 

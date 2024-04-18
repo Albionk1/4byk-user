@@ -329,7 +329,7 @@ for(let i=0;i<message.length;i++){
       mutualFriends[a].message=message[i].message
       mutualFriends[a].createdAt=message[i].createdAt
       mutualFriends[a].status=message[i].status
-      friends.push(mutualFriends[a])
+      friends.push(message[i])
     }
   }
 }
