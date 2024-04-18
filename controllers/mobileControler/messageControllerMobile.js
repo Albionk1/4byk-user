@@ -292,11 +292,6 @@ const message = await Message.aggregate([
     $match: filter
   }, 
   {
-    $sort: {
-      createdAt: -1
-    }
-  },
-  {
     $group: {
       _id: "$by",
       message: { $first: "$message" },
@@ -305,6 +300,11 @@ const message = await Message.aggregate([
       updatedAt: { $first: "$updatedAt" },
       by: { $first: "$by" }, 
       to: { $first: "$to" } 
+    }
+  },
+  {
+    $sort: {
+      createdAt: -1
     }
   },
   {
@@ -411,11 +411,6 @@ const message = await Message.aggregate([
     }
   }, 
   {
-    $sort: {
-      createdAt: -1
-    }
-  },
-  {
     $group: {
       _id: "$by",
       message: { $first: "$message" },
@@ -424,6 +419,11 @@ const message = await Message.aggregate([
       updatedAt: { $first: "$updatedAt" },
       by: { $first: "$by" }, 
       to: { $first: "$to" } 
+    }
+  },
+  {
+    $sort: {
+      createdAt: -1
     }
   },
   {
@@ -537,11 +537,6 @@ const message = await Message.aggregate([
     }
   }, 
   {
-    $sort: {
-      createdAt: -1
-    }
-  },
-  {
     $group: {
       _id: "$by",
       message: { $first: "$message" },
@@ -549,6 +544,11 @@ const message = await Message.aggregate([
       createdAt: { $first: "$createdAt" },
       by: { $first: "$by" }, 
       to: { $first: "$to" } 
+    }
+  },
+  {
+    $sort: {
+      createdAt: -1
     }
   },
   {
