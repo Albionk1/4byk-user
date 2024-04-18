@@ -883,7 +883,8 @@ module.exports.rateUser = async (req, res) => {
           value,
           message,
           title,
-          full_name: req.user.full_name
+          full_name: req.user.full_name,
+          image:req.user.image
         };
         user.ratings.push(newRating);
         await user.save();
