@@ -269,7 +269,7 @@ const following = await Follow.find({ userId: user }).select('friendId');
 const followersIds = followers.map(follower => follower.userId.toString());
 const followingIds = following.map(follow => follow.friendId.toString());
 const mutualFriendsIds = followersIds.filter(id => followingIds.includes(id) && id !== user);
-const mutualFriends = await User.find({ _id: { $in: mutualFriendsIds } }).select('_id full_name image').lean()
+// const mutualFriends = await User.find({ _id: { $in: mutualFriendsIds } }).select('_id full_name image').lean()
 let friends=[]
 const mutualFriendsIdsObjectIds = mutualFriendsIds.map(id => new mongoose.Types.ObjectId(id));
 let filter = {
@@ -308,6 +308,14 @@ const message = await Message.aggregate([
     }
   },
   {
+    $lookup: {
+      from: "users", 
+      localField: "_id",
+      foreignField: "_id",
+      as: "user"
+    }
+  },
+  {
     $project: {
       _id: 1,
       message: 1,
@@ -316,6 +324,8 @@ const message = await Message.aggregate([
       to: 1,
       createdAt: 1,
       updatedAt: 1,
+      full_name: { $arrayElemAt: ["$user.full_name", 0] },
+      image: { $arrayElemAt: ["$user.image", 0] }
     }
   },
   {
@@ -324,11 +334,8 @@ const message = await Message.aggregate([
 ]);
 // console.log(message)
 for(let i=0;i<message.length;i++){
-  for(let a =0;a<mutualFriends.length;a++){
-    if(message[i]._id.toString()===mutualFriends[a]._id.toString()){
-      mutualFriends[a].message=message[i].message
-      mutualFriends[a].createdAt=message[i].createdAt
-      mutualFriends[a].status=message[i].status
+  for(let a =0;a<mutualFriendsIds.length;a++){
+    if(message[i]._id.toString()===mutualFriendsIds[a].toString()){
       friends.push(message[i])
     }
   }
