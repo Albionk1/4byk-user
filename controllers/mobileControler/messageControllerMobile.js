@@ -290,16 +290,16 @@ if(req.query.date){
 const message = await Message.aggregate([
   {
     $match: filter
-  }, 
+  },
   {
     $group: {
-      _id: "$by",
+      _id: { $cond: [{ $eq: ["$by", new mongoose.Types.ObjectId(req.user._id)] }, "$to", "$by"] }, // Group by the recipient's or sender's ID
       message: { $last: "$message" },
       status: { $last: "$status" },
       createdAt: { $last: "$createdAt" },
       updatedAt: { $last: "$updatedAt" },
-      by: { $first: "$by" }, 
-      to: { $first: "$to" } 
+      by: { $last: "$by" },
+      to: { $last: "$to" }
     }
   },
   {
@@ -309,10 +309,16 @@ const message = await Message.aggregate([
   },
   {
     $lookup: {
-      from: "users", 
+      from: "users",
       localField: "_id",
       foreignField: "_id",
       as: "user"
+    }
+  },
+  {
+    $unwind: {
+      path: "$user",
+      preserveNullAndEmptyArrays: true
     }
   },
   {
@@ -324,14 +330,14 @@ const message = await Message.aggregate([
       to: 1,
       createdAt: 1,
       updatedAt: 1,
-      full_name: { $arrayElemAt: ["$user.full_name", 0] },
-      image: { $arrayElemAt: ["$user.image", 0] }
+      full_name: { $ifNull: ["$user.full_name", "Unknown"] },
+      image: { $ifNull: ["$user.image", "default_image_url"] }
     }
   },
   {
-    $limit:15
+    $limit: 15
   }
-]);
+])
 // console.log(message)
 for(let i=0;i<message.length;i++){
   for(let a =0;a<mutualFriendsIds.length;a++){
