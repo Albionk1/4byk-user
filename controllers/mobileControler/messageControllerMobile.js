@@ -294,10 +294,10 @@ const message = await Message.aggregate([
   {
     $group: {
       _id: "$by",
-      message: { $first: "$message" },
-      status: { $first: "$status" },
-      createdAt: { $first: "$createdAt" },
-      updatedAt: { $first: "$updatedAt" },
+      message: { $last: "$message" },
+      status: { $last: "$status" },
+      createdAt: { $last: "$createdAt" },
+      updatedAt: { $last: "$updatedAt" },
       by: { $first: "$by" }, 
       to: { $first: "$to" } 
     }
@@ -413,17 +413,17 @@ const message = await Message.aggregate([
   {
     $group: {
       _id: "$by",
-      message: { $first: "$message" },
-      status: { $first: "$status" },
-      createdAt: { $first: "$createdAt" },
-      updatedAt: { $first: "$updatedAt" },
+      message: { $last: "$message" },
+      status: { $last: "$status" },
+      createdAt: { $last: "$createdAt" },
+      updatedAt: { $last: "$updatedAt" },
       by: { $first: "$by" }, 
       to: { $first: "$to" } 
     }
   },
   {
     $sort: {
-      createdAt: -1
+      updatedAt: -1
     }
   },
   {
@@ -502,7 +502,7 @@ const messages = await Message.aggregate([
   },
   {
     $sort: {
-      createdAt: -1
+      updatedAt: -1
     }
   },
   {
@@ -539,16 +539,17 @@ const message = await Message.aggregate([
   {
     $group: {
       _id: "$by",
-      message: { $first: "$message" },
-      status: { $first: "$status" },
-      createdAt: { $first: "$createdAt" },
+      message: { $last: "$message" },
+      status: { $last: "$status" },
+      createdAt: { $last: "$createdAt" },
+      updatedAt: { $last: "$updatedAt" },
       by: { $first: "$by" }, 
       to: { $first: "$to" } 
     }
   },
   {
     $sort: {
-      createdAt: -1
+      updatedAt: -1
     }
   },
   {
