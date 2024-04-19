@@ -64,7 +64,7 @@ const handleErrors = (err) => {
    const send = await Message.create(obj)
  return res.send({status:'success',send})
    }
-  res.send({status:'fail'})
+  res.send({status:'fail',message:data.message})
   }
   catch(e){
    console.log(e)
@@ -244,8 +244,11 @@ const handleErrors = (err) => {
       const response = await axios.post('https://four-buyk-post-f28d12848a02.herokuapp.com/reject-offert', { offert})
       data = response.data;
     }
+    if(data.status==='success'){
     const msg = await Message.findByIdAndUpdate(message,{offert_res:true})
-    res.send({status:'success'})
+   return res.send({status:'success',message:data.message,messageId:message})
+    }
+    res.send({status:'fail'})
   }
   catch(e){
     res.send({status:'fail'})
@@ -265,8 +268,11 @@ module.exports.acceptOffert=async(req,res)=>{
       const response = await axios.post('https://four-buyk-post-f28d12848a02.herokuapp.com/accept-sell', { offertId:offert})
       data = response.data;
     }
-    const msg = await Message.findByIdAndUpdate(message,{offert_res:true})
-    res.send({status:'success'})
+    if(data.status==='success'){
+      const msg = await Message.findByIdAndUpdate(message,{offert_res:true})
+    return  res.send({status:'success',message:data.message,messageId:message})
+    }
+    res.send({status:'fail'})
 
   }
   catch(e){
