@@ -64,7 +64,7 @@ const handleErrors = (err) => {
          }
        }
     const send = await Message.create(obj)
-   res.send({status:'success',send})
+  return res.send({status:'success',send})
     }
    res.send({status:'fail'})
   }
