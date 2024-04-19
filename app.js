@@ -134,7 +134,7 @@ app.use(socketMiddleware(socket))
        return io.to(user.userId).emit('reciveMessageRoom', { recivemessage: message.message,offert:false})
       }
       if (!user.room && user.userId) {
-        io.to(user.userId).emit('reciveMessageMobile', {myId:myId.toString(), message,offert:false })
+        io.to(user.userId).emit('reciveMessageMobile', {myId:myId.toString(),recivemessage: message,offert:false })
         io.to(user.userId).emit('reciveMessage', {myId:myId.toString(), message:message.message,offert:false })
       }
     }
@@ -153,7 +153,7 @@ app.use(socketMiddleware(socket))
         return io.to(user.userId).emit('reciveMessageRoom', { recivemessage: message.message,offert:false})
       }
       if (!user.room && user.userId) {
-        io.to(user.userId).emit('reciveMessageMobile', { recivemessage: message,offert:false})
+        io.to(user.userId).emit('reciveMessageMobile', {myId:myId.toString(),recivemessage: message,offert:false })
         io.to(user.userId).emit('reciveMessage', {myId:myId.toString(), message:message.message,offert:false })
       }
     }
@@ -169,7 +169,7 @@ app.use(socketMiddleware(socket))
        return io.to(user.userId).emit('reciveOffertMessageRoom', { recivemessage: message,offert:true,price,title,image})
       }
       if (!user.room && user.userId) {
-        io.to(user.userId).emit('reciveMessage', {myId:myId.toString(), message,offert:true,price,title,image })
+        io.to(user.userId).emit('reciveMessage', {myId:myId.toString(),recivemessage: message,offert:true,price,title,image })
       }
     }
     // else{ 
