@@ -360,7 +360,18 @@ module.exports.rejectOffert=async(req,res)=>{
       data = response.data;
     }
     const msg = await Message.findByIdAndUpdate(message,{offert_res:true})
-    res.send({status:'success'})
+    if(msg){
+      res.send({status:'success'})
+    }
+    else{
+      if (process.env.NODE_ENV === 'development') {
+        const response = await axios.post('http://localhost:3002/offert-error', {offertId:offert})
+      }
+      else {
+        const response = await axios.post('https://four-buyk-post-f28d12848a02.herokuapp.com/offert-error', { offertId:offert})
+      }
+      res.send({status:'fail'})
+    }
   }
   catch(e){
     res.send({status:'fail'})
@@ -381,8 +392,19 @@ module.exports.acceptOffert=async(req,res)=>{
       data = response.data;
     }
     const msg = await Message.findByIdAndUpdate(message,{offert_res:true})
-    res.send({status:'success'})
-
+    if(msg){
+      res.send({status:'success'})
+    }
+    else{
+      if (process.env.NODE_ENV === 'development') {
+        const response = await axios.post('http://localhost:3002/offert-error', {offertId:offert})
+      }
+      else {
+        const response = await axios.post('https://four-buyk-post-f28d12848a02.herokuapp.com/offert-error', { offertId:offert})
+      }
+      res.send({status:'fail'})
+    }
+    
   }
   catch(e){
     res.send({status:'fail'})
