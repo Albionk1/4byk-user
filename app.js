@@ -166,7 +166,7 @@ app.use(socketMiddleware(socket))
     const user = getUser(userId) 
     if (user) { 
       if (user.room==[userId,myId.toString()].join('')) {
-        io.to(user.userId).emit('reciveOffertMessageRoomMobile', { recivemessage: message,offert:true,price,title,image})
+        io.to(user.userId).emit('reciveMessageRoomMobile', { recivemessage: message,offert:true,price,title,image})
        return io.to(user.userId).emit('reciveOffertMessageRoom', {  message,offert:true,price,title,image})
       }
       if (!user.room && user.userId) {
