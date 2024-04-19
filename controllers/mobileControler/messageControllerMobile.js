@@ -53,7 +53,6 @@ const handleErrors = (err) => {
      data = response.data;
    }
    if(data.status==='success'){
-     console.log('offert',data.offert)
      let by = req.user._id
      const obj={by,to,message,title,image,price,offert:true,offert_ref:data.offert}
      const user=getUser(to.toString())
