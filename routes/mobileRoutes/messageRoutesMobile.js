@@ -43,7 +43,7 @@ const routeLimiter = rateLimit({
       fileFilter,
       limits: { fileSize: 5000000 },
     })
-router.post('/send-message',requireAuthMobile,upload.none(),messageController.sendMessage)
+router.post('/send-message',requireAuthMobile,messageController.sendMessage)
 router.post('/send-offert',requireAuthMobile,upload.none(),messageController.sendOffert)
 router.get('/get-message',requireAuthMobile,messageController.getMessage)
 router.get('/get-message-notification',requireAuthMobile,messageController.getMessageNotification)

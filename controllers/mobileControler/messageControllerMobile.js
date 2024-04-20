@@ -23,8 +23,8 @@ const handleErrors = (err) => {
 
  module.exports.sendMessage=async(req,res)=>{
    try{
-      const {to,message} =req.body
-      const obj={by:req.user._id,to,message}
+      const {to,message,offert} =req.body
+      const obj={by:req.user._id,to,message,offert}
       const user=getUser(to.toString())
       if (user) {
          if(user.room==[to, req.user._id].join('')){
@@ -74,9 +74,9 @@ const handleErrors = (err) => {
 }
  module.exports.getMessage=async(req,res)=>{
    try{
-      const {to,date} =req.query
+      const {to,date,offert} =req.query
       const limit=15
-      let filter ={ $or: [ { by:req.user._id,to  }, { by: to,to:req.user._id  } ]}
+      let filter ={ $or: [ { by:req.user._id,to  }, { by: to,to:req.user._id  } ],offert}
       if(date){
         filter.updatedAt ={$lte:date}
       }
