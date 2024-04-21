@@ -24,8 +24,8 @@ const handleErrors = (err) => {
 
  module.exports.sendMessage=async(req,res)=>{
    try{
-      const {by,to,message} =req.body
-      const obj={by,to,message}
+      const {by,to,message,offert} =req.body
+      const obj={by,to,message,offert}
       const user=getUser(to.toString())
       if (user) {
          if(user.room==[to, by].join('')){
@@ -76,14 +76,15 @@ const handleErrors = (err) => {
 }
  module.exports.getMessage=async(req,res)=>{
    try{
-      const {by,to} =req.body
+      const {by,to,offert} =req.body
       var page=req.body.page
       if(!page){
          page=0
       }
       const limit=20
       const skip = page  * limit;
-    const send = await Message.find({  $or: [ { by,to  }, { by: to,to:by  } ] }).skip(skip).limit(limit).sort({createdAt:-1})
+      let filter = {  $or: [ { by,to  }, { by: to,to:by  } ],offert }
+    const send = await Message.find(filter).skip(skip).limit(limit).sort({createdAt:-1})
     const ids=[]
     for(var i =0;i<send.length;i++){
         ids.push(send[i]._id)
