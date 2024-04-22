@@ -82,6 +82,9 @@ router.patch('/updateForgotedPassword',upload.none(),authController.updateForgot
 // rate user
 router.post('/rate-user',upload.none(),requireAuth,authController.rateUser)
 
+//activate user email
+//router activate user from email
+router.post('/activate-user-email',authController.activateUserEmail)
 //logout
 router.get('/logout',authController.logout)
 

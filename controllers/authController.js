@@ -903,6 +903,31 @@ module.exports.rateUser = async (req, res) => {
 
   }
 }
+module.exports.activateUserEmail= async(req,res)=>{
+  try{
+    let liked
+     const user = await User.findOne({_id:req.body.user,isActive:false})
+     if(user){
+      user.isActive=true
+      await user.save()
+      const token = createToken(user._id)
+      res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 })
+      if (process.env.NODE_ENV === 'development') {
+        const responsePost = await axios.get('http://localhost:3002/liked-product?id='+user._id);
+        liked = responsePost.data;
+    }
+    else {
+        const responsePost = await axios.get('https://four-buyk-post-f28d12848a02.herokuapp.com/liked-product?id='+user._id);
+        liked = responsePost.data;
+    }
+      return res.send({status:'success',liked,token})
+     }
+  }
+  catch(e){
+    const errors = handleErrors(e)
+    res.send({ status: 'fail', errors })
+  }
+}
 module.exports.logout = (req, res) => {
   res.cookie('jwt', '', { maxAge: 1 })
   res.redirect('/login')
