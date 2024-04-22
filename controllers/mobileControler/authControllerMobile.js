@@ -62,9 +62,10 @@ const handleErrors = (err) => {
   return errors
 }
 module.exports.login = async (req, res) => {
+  let user
     try {  
     const { email, password,fcm_token } = req.body
-      const user = await User.login(email, password)
+       user = await User.login(email, password)
       if (user.isActive !== false) {
         if(user.deleted){
           throw Error('incorrect password')
@@ -77,7 +78,15 @@ module.exports.login = async (req, res) => {
         res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 })
         res.send({ data: { user },token})
       } else {
-        throw Error('access')
+        if(user.language==='al'){
+          return res.send({status:'fail',errors:{error:'Ju lutem, kontrolloni kutinën tuaj të postës elektronike për të verifikuar adresën tuaj të emailit dhe për të aktivizuar llogarinë.'},message:'Ju lutem, kontrolloni kutinën tuaj të postës elektronike për të verifikuar adresën tuaj të emailit dhe për të aktivizuar llogarinë.'})
+         }
+         if(user.language==='en'){
+          return res.send({status:'fail',errors:{error:'Please check your inbox to verify your email address and activate your account.'},message:'Please check your inbox to verify your email address and activate your account.'})
+         }
+         if(user.language==='de' || !language){
+          return res.send({status:'fail',errors:{error:'Bitte überprüfen Sie Ihr Postfach, um Ihre E-Mail-Adresse zu bestätigen und Ihr Konto zu aktivieren.'},message:'Bitte überprüfen Sie Ihr Postfach, um Ihre E-Mail-Adresse zu bestätigen und Ihr Konto zu aktivieren.'})
+         }
       }
     } catch (e) {
       // console.log(e)
