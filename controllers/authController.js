@@ -13,7 +13,7 @@ const Follow = require('../models/followModel')
 const Message = require('../models/messageModel')
 const mongoose = require('mongoose')
 const ForgotPassword= require('../models/forgotPasswordModel')
-const {sendForgotPasswordEmail} = require('../email')
+const {sendForgotPasswordEmail,sendActivateEmail} = require('../email')
 // const { uploadFile, getFileStream, deleteImage } = require('../aws')
 const { uploadFile, getFileStream, deleteImage } = require('../aws')
 const Subscribe = require('../models/subscripeModel')
@@ -67,7 +67,10 @@ const handleErrors = (err) => {
   return errors
 }
 
-
+module.exports.testEmail = async(req,res)=>{
+  sendActivateEmail('albionkrivenjeva1@gmail.com','Albion','65a6438eb06f54d2ccfe486f')
+  res.send({status:'success',message:'hello there'})
+}
 module.exports.getUserImageById=async(req,res)=>{
   try{
   const ids=req.body.ids
@@ -135,6 +138,17 @@ module.exports.login = async (req, res) => {
 
 module.exports.addUser = async(req,res)=>{
   try{
+    let language1
+      if (req.cookies.language && req.cookies.language.includes('en')) {
+        language1='en'
+      }
+
+      if (req.cookies.language && req.cookies.language.includes('al')) {
+        language1='al'
+      }
+      if (!req.cookies.language || req.cookies.language.includes('de')) {
+        language1='de'
+      }
     if (req.file) {
     req.body.image = ''
       const result = await uploadFile(req.file)
@@ -146,8 +160,17 @@ module.exports.addUser = async(req,res)=>{
         })
     }
  const {full_name,country,email,password,acount_type,bio,gender,category,language,image} = req.body
- const user = await User.create({full_name,role:'user',country,email,password,acount_type,bio,gender,category,language,image})
- res.send({status:'success',message:'added'})
+ const user = await User.create({full_name,role:'user',country,email,password,acount_type,bio,gender,category,language,image,isActive:false})
+ sendActivateEmail(user.email,user.full_name,user._id)
+ if(language1==='al'){
+  res.send({status:'success',message:'Ju lutem, kontrolloni kutinën tuaj të postës elektronike për të verifikuar adresën tuaj të emailit dhe për të aktivizuar llogarinë.'})
+ }
+ if(language1==='en'){
+  res.send({status:'success',message:'Please check your inbox to verify your email address and activate your account.'})
+ }
+ if(language1==='de'){
+  res.send({status:'success',message:'Bitte überprüfen Sie Ihr Postfach, um Ihre E-Mail-Adresse zu bestätigen und Ihr Konto zu aktivieren.'})
+ }
   }
   catch(e){
     const errors = handleErrors(e)
