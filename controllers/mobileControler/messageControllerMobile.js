@@ -323,6 +323,7 @@ let filter = {
       to: new mongoose.Types.ObjectId(req.user._id)
     }
   ]
+  ,offert:false
 }
 if(req.query.date){
   filter.updatedAt={ $lte: req.query.date }
@@ -579,15 +580,15 @@ if(message.users[1].toString()!==req.user._id.toString())nonFriends.push(message
 const nonmutualFriendsIdsObjectIds = nonFriends.map(id => new mongoose.Types.ObjectId(id));
 let filter1 ={
       $or:[
-        // {
-        //   to: { $in: nonmutualFriendsIdsObjectIds },
-        //   by: new mongoose.Types.ObjectId(req.user._id)
-        // },
+        {
+          to: { $in: nonmutualFriendsIdsObjectIds },
+          by: new mongoose.Types.ObjectId(req.user._id)
+        },
         {
           by: { $in: nonmutualFriendsIdsObjectIds },
           to: new mongoose.Types.ObjectId(req.user._id)
         }
-      ]
+      ],offert:false
     }
     const message = await Message.aggregate([
       {
