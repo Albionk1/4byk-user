@@ -78,15 +78,7 @@ module.exports.login = async (req, res) => {
         res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 })
         res.send({ data: { user },token})
       } else {
-        if(user.language==='al'){
-          return res.send({status:'fail',errors:{error:'Ju lutem, kontrolloni kutinën tuaj të postës elektronike për të verifikuar adresën tuaj të emailit dhe për të aktivizuar llogarinë.'},message:'Ju lutem, kontrolloni kutinën tuaj të postës elektronike për të verifikuar adresën tuaj të emailit dhe për të aktivizuar llogarinë.'})
-         }
-         if(user.language==='en'){
-          return res.send({status:'fail',errors:{error:'Please check your inbox to verify your email address and activate your account.'},message:'Please check your inbox to verify your email address and activate your account.'})
-         }
-         if(user.language==='de' || !language){
-          return res.send({status:'fail',errors:{error:'Bitte überprüfen Sie Ihr Postfach, um Ihre E-Mail-Adresse zu bestätigen und Ihr Konto zu aktivieren.'},message:'Bitte überprüfen Sie Ihr Postfach, um Ihre E-Mail-Adresse zu bestätigen und Ihr Konto zu aktivieren.'})
-         }
+          return res.send({status:'success',message:'Address verify'})
       }
     } catch (e) {
       // console.log(e)
@@ -110,15 +102,7 @@ module.exports.login = async (req, res) => {
    const {full_name,country,email,password,acount_type,bio,gender,category,language,image} = req.body
    const user = await User.create({full_name,role:'user',country,email,password,acount_type,bio,gender,category,language,image,isActive:false})
  sendActivateEmail(user.email,user.full_name,user._id)
- if(language==='al'){
-  res.send({status:'success',message:'Ju lutem, kontrolloni kutinën tuaj të postës elektronike për të verifikuar adresën tuaj të emailit dhe për të aktivizuar llogarinë.'})
- }
- if(language==='en'){
-  res.send({status:'success',message:'Please check your inbox to verify your email address and activate your account.'})
- }
- if(language==='de' || !language){
-  res.send({status:'success',message:'Bitte überprüfen Sie Ihr Postfach, um Ihre E-Mail-Adresse zu bestätigen und Ihr Konto zu aktivieren.'})
- }
+ return res.send({status:'success',message:'Address verify'})
     }
     catch(e){
       const errors = handleErrors(e)
