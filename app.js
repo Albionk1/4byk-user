@@ -133,7 +133,7 @@ app.use(socketMiddleware(socket))
         io.to(user.userId).emit('reciveMessageRoomMobile', { recivemessage: message,offert:false})
        return io.to(user.userId).emit('reciveMessageRoom', { recivemessage: message.message,offert:false})
       }
-      if (!user.room && user.userId) {
+      else{
         io.to(user.userId).emit('reciveMessageMobile', {myId:myId.toString(),recivemessage: message,offert:false })
         io.to(user.userId).emit('reciveMessage', {myId:myId.toString(), message:message.message,offert:false })
       }
