@@ -76,7 +76,7 @@ module.exports.login = async (req, res) => {
          await user.save()
         }
         res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 })
-        res.send({ data: { user },token})
+        res.send({ data: { user },token,status:'success'})
       } else {
           return res.send({status:'success',message:'Address verify'})
       }
