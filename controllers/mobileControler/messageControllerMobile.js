@@ -452,7 +452,7 @@ const filter1={
           ],
           to: new mongoose.Types.ObjectId(req.user._id)
         }
-      ]
+      ],offert:true
     }
     const message = await Message.aggregate([
       {
