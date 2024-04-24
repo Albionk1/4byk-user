@@ -423,6 +423,12 @@ module.exports.follow = async(req,res)=>{
     }
     else{
       await Follow.create({userId:req.user._id,friendId:req.body.friend})
+      if (process.env.NODE_ENV === 'development') {
+        const response = await axios.post('http://localhost:3001/notification/add-notification', { to: req.body.friend, by: req.user._id, from: 'follow', url: '/client-products/' + req.body.friend })
+      }
+      else {
+        const response = await axios.post('https://four-buyk-user-909854489e96.herokuapp.com/notification/add-notification', { to: req.body.friend, by: req.user._id, from: 'follow', url: '/client-products/' + req.body.friend })
+      }
       return res.send({status:'success',message:'added'})
     }
   }
