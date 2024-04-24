@@ -26,7 +26,7 @@ const handleErrors = (err) => {
     const {by,to,message,from,status,url} = req.body
       const notification = await Notification.create({by,to,message,from,status,url})
       const user = await User.findById(by).select('full_name')
-      req.sendSocketMessage('notification', {user:{name:user.full_name,id:user._id},message,from,url,date:notification.createdAt},to)
+      // req.sendSocketMessage('notification', {user:{name:user.full_name,id:user._id},message,from,url,date:notification.createdAt},to)
       res.send({status:'success',message:'Notification sent'})
       
   }
