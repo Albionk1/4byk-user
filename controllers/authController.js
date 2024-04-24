@@ -122,7 +122,7 @@ module.exports.login = async (req, res) => {
           liked = responsePost.data;
       }
       else {
-          const responsePost = await axios.get('https://four-buyk-post-f28d12848a02.herokuapp.com/liked-product?id='+user._id);
+          const responsePost = await axios.get(process.env.URL_POST+'/liked-product?id='+user._id);
           liked = responsePost.data;
       }
         res.send({ data: { user },cookie:token,liked })
@@ -427,7 +427,7 @@ module.exports.follow = async(req,res)=>{
         const response = await axios.post('http://localhost:3001/notification/add-notification', { to: req.body.friend, by: req.user._id, from: 'follow', url: '/client-products/' + req.body.friend })
       }
       else {
-        const response = await axios.post('https://four-buyk-user-909854489e96.herokuapp.com/notification/add-notification', { to: req.body.friend, by: req.user._id, from: 'follow', url: '/client-products/' + req.body.friend })
+        const response = await axios.post(process.env.URL_AUTh+'/notification/add-notification', { to: req.body.friend, by: req.user._id, from: 'follow', url: '/client-products/' + req.body.friend })
       }
       return res.send({status:'success',message:'added'})
     }
@@ -946,7 +946,7 @@ module.exports.activateUserEmail= async(req,res)=>{
         liked = responsePost.data;
     }
     else {
-        const responsePost = await axios.get('https://four-buyk-post-f28d12848a02.herokuapp.com/liked-product?id='+user._id);
+        const responsePost = await axios.get(process.env.URL_POST+'/liked-product?id='+user._id);
         liked = responsePost.data;
     }
       return res.send({status:'success',liked,token})

@@ -76,7 +76,7 @@ module.exports.getNotifications=async(req,res)=>{
       reels = responseLike.data;
   }
    else {
-      const responseLike = await axios.get('https://four-buyk-post-f28d12848a02.herokuapp.com/get-reels-image?reelIds=' + reelIds.join(','));
+      const responseLike = await axios.get(process.env.URL_POST+'/get-reels-image?reelIds=' + reelIds.join(','));
       reels = responseLike.data;
   }
   for (let i =0 ;i<reels.length;i++){

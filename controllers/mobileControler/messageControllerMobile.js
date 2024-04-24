@@ -49,7 +49,7 @@ const handleErrors = (err) => {
      data = response.data;
    }
    else {
-     const response = await axios.post('https://four-buyk-post-f28d12848a02.herokuapp.com/make-offert', { user:req.user._id,product:productId })
+     const response = await axios.post(process.env.URL_POST+'/make-offert', { user:req.user._id,product:productId })
      data = response.data;
    }
    if(data.status==='success'){
@@ -241,7 +241,7 @@ const handleErrors = (err) => {
       data = response.data;
     }
     else {
-      const response = await axios.post('https://four-buyk-post-f28d12848a02.herokuapp.com/reject-offert', { offert})
+      const response = await axios.post(process.env.URL_POST+'/reject-offert', { offert})
       data = response.data;
     }
     if(data.status==='success'){
@@ -254,7 +254,7 @@ const handleErrors = (err) => {
         const response = await axios.post('http://localhost:3002/offert-error', {offertId:offert})
       }
       else {
-        const response = await axios.post('https://four-buyk-post-f28d12848a02.herokuapp.com/offert-error', { offertId:offert})
+        const response = await axios.post(process.env.URL_POST+'/offert-error', { offertId:offert})
       }
       res.send({status:'fail'})
     }
@@ -276,7 +276,7 @@ module.exports.acceptOffert=async(req,res)=>{
       data = response.data;
     }
     else {
-      const response = await axios.post('https://four-buyk-post-f28d12848a02.herokuapp.com/accept-sell', { offertId:offert})
+      const response = await axios.post(process.env.URL_POST+'/accept-sell', { offertId:offert})
       data = response.data;
     }
     if(data.status==='success'){
@@ -289,7 +289,7 @@ module.exports.acceptOffert=async(req,res)=>{
           const response = await axios.post('http://localhost:3002/offert-error', {offertId:offert})
         }
         else {
-          const response = await axios.post('https://four-buyk-post-f28d12848a02.herokuapp.com/offert-error', { offertId:offert})
+          const response = await axios.post(process.env.URL_POST+'/offert-error', { offertId:offert})
         }
         res.send({status:'fail'})
       }
