@@ -13,6 +13,7 @@ const notificationRouter = require('./routes/notificationRoutes')
 const followRouterMobile = require('./routes/mobileRoutes/followRoutesMobile')
 const notificationRouterMobile = require('./routes/mobileRoutes/notificationRoutesMobile')
 const messageRouterMobile = require('./routes/mobileRoutes/messageRoutesMobile')
+const versionRouterMobile = require('./routes/mobileRoutes/versionRoutesMobile')
 const User = require('./models/userModel')
 const { initializeApp, sendMessage } = require('./controllers/fcm_notifications')
 
@@ -82,6 +83,7 @@ app.use('/api/v1/mobile/auth', authRouterMobile)
 app.use('/api/v1/mobile/follow', followRouterMobile)
 app.use('/api/v1/mobile/notification', notificationRouterMobile)
 app.use('/api/v1/mobile/message', messageRouterMobile)
+app.use('/api/v1/mobile/version', versionRouterMobile)
 
 
 
