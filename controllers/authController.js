@@ -420,10 +420,10 @@ module.exports.follow = async(req,res)=>{
     else{
     const followed=  await Follow.create({userId:req.user._id,friendId:req.body.friend})
       if (process.env.NODE_ENV === 'development') {
-        const response = await axios.post('http://localhost:3001/notification/add-notification', { to: req.body.friend, by: req.user._id, from: 'follow', url: '/client-products/' + req.body.friend,payload:followed })
+        const response = await axios.post('http://localhost:3001/notification/add-notification', { to: req.body.friend, by: req.user._id, n_type: 'follow', url: '/client-products/' + req.body.friend,payload:followed })
       }
       else {
-        const response = await axios.post(process.env.URL_AUTh+'/notification/add-notification', { to: req.body.friend, by: req.user._id, from: 'follow', url: '/client-products/' + req.body.friend,payload:followed })
+        const response = await axios.post(process.env.URL_AUTh+'/notification/add-notification', { to: req.body.friend, by: req.user._id, n_type: 'follow', url: '/client-products/' + req.body.friend,payload:followed })
       }
       return res.send({status:'success',message:'added'})
     }
