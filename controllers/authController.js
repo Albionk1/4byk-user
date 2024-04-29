@@ -17,7 +17,6 @@ const {sendForgotPasswordEmail,sendActivateEmail} = require('../email')
 // const { uploadFile, getFileStream, deleteImage } = require('../aws')
 const { uploadFile, getFileStream, deleteImage } = require('../aws')
 const Subscribe = require('../models/subscripeModel')
-
 const handleErrors = (err) => {
   let errors = {}
   // incorrect email in login form
@@ -67,10 +66,7 @@ const handleErrors = (err) => {
   return errors
 }
 
-module.exports.testEmail = async(req,res)=>{
-  sendActivateEmail('albionkrivenjeva1@gmail.com','Albion','65a6438eb06f54d2ccfe486f')
-  res.send({status:'success',message:'hello there'})
-}
+
 module.exports.getUserImageById=async(req,res)=>{
   try{
   const ids=req.body.ids

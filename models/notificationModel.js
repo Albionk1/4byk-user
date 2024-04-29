@@ -17,10 +17,10 @@ const notificationSchema = new mongoose.Schema(
     url:{
       type:String
     },
-    from:{
+    n_type:{
       type:String,
       enum: {
-         values: ["reel", "forum",'like','follow','comment'],
+         values: ["reel", "forum",'like','follow','comment','general','mention','share','event_invitation','system_updates','profile_visit'],
          message: `Status nuk është i saktë`,
        },
        default: 'delivered',
