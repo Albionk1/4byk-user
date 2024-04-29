@@ -32,6 +32,9 @@ const notificationSchema = new mongoose.Schema(
          message: `Status nuk është i saktë`,
        },
        default: 'delivered',
+    },
+    payload:{
+      type:mongoose.Schema.Types.Mixed
     }
   },
   {
