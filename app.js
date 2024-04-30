@@ -59,6 +59,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
 app.use(express.json())
 app.use(express.static(path.join(__dirname, 'public')))
+app.use(socketMiddleware(io))
 const { addUser, removeUser, getUser, editRoom } = require('./utils')
 
 
@@ -101,8 +102,8 @@ db.on('error', console.error.bind(console, 'connection error:'))
 db.once('open', () => { 
   initializeApp() 
 })
+
 io.on('connection', (socket) => { 
-app.use(socketMiddleware(socket))
   socket.on('join', ({ myId }) => { 
     removeUser(socket.id)
     const user = addUser({ id: socket.id, userId: myId })
