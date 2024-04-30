@@ -141,12 +141,10 @@ io.on('connection', (socket) => {
         io.to(user.userId).emit('reciveMessage', {myId:myId.toString(), message:message.message,offert:false })
       }
     }
-    // else{ 
-    //   const userToken = await User.findById(userId).select('fcm_token')
-    //   if(userToken){
-    //     sendMessage("Hejposta", message,userToken.fcm_token);
-    //   }    
-    // }
+    else{ 
+      const user = await User.findById(userId).select('fcm_token')
+        sendMessage(message.full_name, message,user.fcm_token[user.fcm_token.length-1]);    
+    }
   })
   socket.on('messageSendMobile', async({ userId,myId, message }) => { 
     const user = getUser(userId) 
