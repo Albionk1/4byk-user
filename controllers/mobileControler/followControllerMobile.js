@@ -69,12 +69,21 @@ module.exports.follow = async(req,res)=>{
        return res.send({status:'success',message:'removed'})
      }
      else{
+      let payload={
+        user:{
+          _id:req.user._id,
+          full_name:req.user.full_name,
+          image:req.user.image,
+          url:'/client-products/' + req.user._id
+        }
+      }
+      payload.message=req.body.full_name +'followed you'
       const followed= await Follow.create({userId:req.user._id,friendId:req.body.friend})
        if (process.env.NODE_ENV === 'development') {
-        const response = await axios.post('http://localhost:3001/notification/add-notification', { to: req.body.friend, by: req.user._id, n_type: 'follow', url: '/client-products/' + req.body.friend,payload:followed })
+        const response = await axios.post('http://localhost:3001/notification/add-notification', { to: req.body.friend, by: req.user._id, n_type: 'follow', url: '/client-products/' + req.body.friend,payload })
       }
       else {
-        const response = await axios.post(process.env.URL_AUTh+'/notification/add-notification', { to: req.body.friend, by: req.user._id, n_type: 'follow', url: '/client-products/' + req.body.friend,payload:followed })
+        const response = await axios.post(process.env.URL_AUTh+'/notification/add-notification', { to: req.body.friend, by: req.user._id, n_type: 'follow', url: '/client-products/' + req.body.friend,payload })
       }
        return res.send({status:'success',message:'added'})
      }
