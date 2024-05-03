@@ -31,6 +31,9 @@ const messageSchema = new mongoose.Schema(
     message:{
       type:String
     },
+    room:{
+    type:String
+    },
     status:{
       type:String,
       enum: {

@@ -11,6 +11,7 @@ const createToken = (id) => {
 const axios = require('axios')
 const Follow = require('../models/followModel')
 const Message = require('../models/messageModel')
+const Room = require('../models/roomModel')
 const mongoose = require('mongoose')
 const ForgotPassword= require('../models/forgotPasswordModel')
 const {sendForgotPasswordEmail,sendActivateEmail} = require('../email')
@@ -413,12 +414,22 @@ module.exports.getUserBusinessTable = async (req, res) => {
 module.exports.follow = async(req,res)=>{
   try{
     const follow = await Follow.findOne({userId:req.user._id,friendId:req.body.friend})
+    // const following = await Follow.countDocuments({friendId:req.user._id,userId:req.body.friend})
+  //const room = await Room.findOne({room:[req.user._id, req.body.friend].join('')})
     if(follow){
       await follow.deleteOne()
+      // if(room){
+      //   room.friend = false
+      //await room.save()
+      // }
       return res.send({status:'success',message:'removed'})
     }
     else{
     const followed=  await Follow.create({userId:req.user._id,friendId:req.body.friend})
+    //if(room&&following){
+    //room.friend = true
+    //await room.save()
+    //}
     let payload={
       user:{
         _id:req.user._id,

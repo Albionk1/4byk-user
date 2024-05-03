@@ -4,7 +4,7 @@ const { filterObj, validMongoId ,getUser} = require('../utils')
 const mongoose = require('mongoose')
 const Follow = require('../models/followModel')
 const axios = require('axios')
-
+const Room = require('../models/roomModel')
 
 const handleErrors = (err) => {
   
@@ -81,6 +81,14 @@ const handleErrors = (err) => {
       if(!page){
          page=0
       }
+      // const room = await Room.findOne({room:[to, by].join('')})
+      // if(!room){
+      //   let friend = false
+      //   const following = await Follow.countDocuments({userId:by,friendId:to})
+      //   const follower = await Follow.countDocuments({friendId:by,userId:to})
+      //   if(following&&follower) friend =true
+      //   await Room.create({room:[to, by].join(''),participants:[to,by],friend})
+      // }
       const limit=20
       const skip = page  * limit;
       let filter = {  $or: [ { by,to  }, { by: to,to:by  } ],offert }

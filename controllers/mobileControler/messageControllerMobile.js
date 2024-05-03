@@ -4,7 +4,7 @@ const mongoose = require('mongoose')
 const Follow = require('../../models/followModel')
 const User = require('../../models/userModel')
 const axios = require('axios')
-
+const Room = require('../../models/roomModel')
 const handleErrors = (err) => {
   
    let errors = {}
@@ -85,6 +85,14 @@ const handleErrors = (err) => {
     for(let i =0;i<send.length;i++){
         ids.push(send[i]._id)
     }
+    // const room = await Room.findOne({room:[to, by].join('')})
+      // if(!room){
+      //   let friend = false
+      //   const following = await Follow.countDocuments({userId:req.user._id,friendId:to})
+      //   const follower = await Follow.countDocuments({friendId:req.user._id,userId:to})
+      //   if(following&&follower) friend =true
+      //   await Room.create({room:[to, by].join(''),participants:[to,by],friend})
+      // }
     await Message.updateMany({_id:{$in:ids},status:'delivered'},{$set: { status: 'seen' } })
     res.send(send)
    }
