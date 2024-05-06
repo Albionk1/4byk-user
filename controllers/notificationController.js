@@ -36,6 +36,25 @@ const handleErrors = (err) => {
 
   }
 }
+module.exports.addActivityMultiple = async(req,res)=>{
+  try{
+    const {by,to,message,n_type,status,url,payload} = req.body
+    let notifications=[]
+    for(let i=0;i<to.length;i++){
+ notifications.push({by,to:to[i],message,n_type,status,url,payload})
+    }
+      const notification = await Notification.create(notifications)
+      // const user = await User.findById(by).select('full_name image')
+      // req.sendSocketMessage('notification', {user:{full_name:user.full_name,id:user._id,image:user.image},message,n_type,url,date:notification.createdAt,payload},to)
+      res.send({status:'success',message:'Notification sent'})
+      
+  }
+  catch(e){
+    console.log(e)
+    res.send({status:'fail',message:'Something went wrong'})
+
+  }
+}
 
 module.exports.deleteAllNotification = async(req,res)=>{
   try{
