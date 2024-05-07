@@ -400,7 +400,7 @@ module.exports.loginOrCreateGoogle = async(req,res)=>{
         userGoogleId.fcm_token.push(fcm_token)
        await userGoogleId.save()
       }
-      return  res.send({ data: { user },token,status:'success'})
+      return  res.send({ data: { userGoogleId },token,status:'success'})
     }
     let userEmail = await User.findOne({email})
     if(userEmail){
@@ -410,7 +410,7 @@ module.exports.loginOrCreateGoogle = async(req,res)=>{
       userEmail.fcm_token.push(fcm_token)
      }
      await userEmail.save()
-     return  res.send({ data: { user },token,status:'success'})
+     return  res.send({ data: { userEmail },token,status:'success'})
     }
     function generateRandomText(length) {
       const uppercaseChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
