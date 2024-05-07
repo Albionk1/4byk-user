@@ -53,5 +53,7 @@ router.get('/search-users',authController.searchUsers)
 router.delete('/delete-account',authController.deleteAccount)
 router.post('/sendForgotPasswordEmail',routeLimiter, authController.sendForgotPasswordEmail)
 // rate user
+//auth google
+router.post('/login-or-create-google',authController.loginOrCreateGoogle)
 router.post('/rate-user',requireAuthMobile,authController.rateUser)
 module.exports=router

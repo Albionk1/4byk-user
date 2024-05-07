@@ -389,3 +389,71 @@ module.exports.rateUser = async (req, res) => {
 
   }
 }
+
+module.exports.loginOrCreateGoogle = async(req,res)=>{
+  try{
+    let {googleId,email,full_name,fcm_token} = req.body
+    let userGoogleId=await User.findOne({googleId})
+    if(userGoogleId){
+      const token = createToken(userGoogleId._id)
+      if(!userGoogleId.fcm_token.includes(fcm_token)&&fcm_token){
+        userGoogleId.fcm_token.push(fcm_token)
+       await userGoogleId.save()
+      }
+      return  res.send({ data: { user },token,status:'success'})
+    }
+    let userEmail = await User.findOne({email})
+    if(userEmail){
+      userEmail.googleId=googleId
+     const token = createToken(userEmail._id)
+     if(!userEmail.fcm_token.includes(fcm_token)&&fcm_token){
+      userEmail.fcm_token.push(fcm_token)
+     }
+     await userEmail.save()
+     return  res.send({ data: { user },token,status:'success'})
+    }
+    function generateRandomText(length) {
+      const uppercaseChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      const lowercaseChars = 'abcdefghijklmnopqrstuvwxyz';
+      const numbers = '0123456789';
+      const specialChars = '!@#$%^&*()-_+=<>?';
+  
+      const allChars = uppercaseChars + lowercaseChars + numbers + specialChars;
+  
+      let randomText = '';
+      randomText += uppercaseChars[Math.floor(Math.random() * uppercaseChars.length)];
+      randomText += lowercaseChars[Math.floor(Math.random() * lowercaseChars.length)];
+      randomText += numbers[Math.floor(Math.random() * numbers.length)];
+      randomText += specialChars[Math.floor(Math.random() * specialChars.length)];
+      for (let i = 0; i < length - 4; i++) {
+          randomText += allChars[Math.floor(Math.random() * allChars.length)];
+      }
+      randomText = randomText.split('').sort(() => Math.random() - 0.5).join('');
+  
+      return randomText;
+  }
+  let user = await User.create({
+    email,
+    full_name,
+    password: generateRandomText(12),
+    gender: '', // Provide a default value or ensure it's properly populated
+    role: 'user',
+    acount_type: 'personal',
+    country: '', // Provide a default value or ensure it's properly populated
+    category: 'other', // Provide a default value or ensure it's properly populated
+    language: 'en' ,
+    googleId
+})
+user.googleId=googleId
+const token = createToken(user._id)
+if(!user.fcm_token.includes(fcm_token)&&fcm_token){
+  user.fcm_token.push(fcm_token)
+}
+await user.save()
+return  res.send({ data: { user },token,status:'success'})    
+  }
+  catch(e){
+    const errors = handleErrors(e)
+    res.status(400).json({ errors })
+  }
+}
