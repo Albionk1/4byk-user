@@ -574,3 +574,19 @@ module.exports.acceptOffert=async(req,res)=>{
     res.send({status:'fail'})
   }
 }
+
+module.exports.createRooms=async(req,res)=>{
+  try{
+    const messages = await Message.aggregate([{
+      $group: {
+        _id: { by: "$by", to: "$to" },
+      }
+  },])
+    res.send({status:'success',data:messages})
+
+  }
+  catch(e){
+    res.send({status:'fail'})
+
+  }
+}

@@ -53,7 +53,7 @@ router.get('/offerts-for-message',messageController.getOffertsForMessage)
 router.get('/non-friends-message',messageController.getNonFriendForMessage)
 router.post('/reject-offert',upload.none(),messageController.rejectOffert)
 router.post('/accept-offert',upload.none(),messageController.acceptOffert)
-
+router.get('/create-rooms',messageController.createRooms)
 
 
 module.exports = router;
