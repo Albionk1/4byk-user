@@ -155,6 +155,9 @@ const userSchema = new mongoose.Schema(
     facebookId:{
       type:String
      },
+     appleId:{
+      type:String
+     },
     fcm_token: [{
       type: String,
       default: "",

@@ -55,5 +55,6 @@ router.post('/sendForgotPasswordEmail',routeLimiter, authController.sendForgotPa
 // rate user
 //auth google
 router.post('/login-or-create-google',authController.loginOrCreateGoogle)
+router.post('/login-or-create-apple',authController.loginOrCreateApple)
 router.post('/rate-user',requireAuthMobile,authController.rateUser)
 module.exports=router
