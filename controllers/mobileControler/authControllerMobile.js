@@ -176,7 +176,7 @@ module.exports.editProfileCover=async(req,res)=>{
       deleteImage(user.cover)
        user.cover = req.body.cover
        await user.save()
-    res.send({status:'success',message:'Cover updated'})
+    res.send({status:'success',message:'Cover updated',cover:req.body.cover})
   }
   catch(e){
    res.send({status:'fail',message:"Cover didn't updated"})
