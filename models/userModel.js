@@ -158,10 +158,10 @@ const userSchema = new mongoose.Schema(
      appleId:{
       type:String
      },
-    fcm_token: [{
+    fcm_token: {
       type: String,
       default: "",
-    }] ,ratings: [
+    } ,ratings: [
       {
           user: {
               type: mongoose.Schema.ObjectId,

@@ -143,7 +143,7 @@ io.on('connection', (socket) => {
     }
     else{ 
       const user = await User.findById(userId).select('fcm_token')
-        sendMessage(message.full_name, message,user.fcm_token[user.fcm_token.length-1]);    
+        sendMessage(message.full_name, message,user.fcm_token);    
     }
   })
   socket.on('messageSendMobile', async({ userId,myId, message }) => { 
@@ -160,7 +160,7 @@ io.on('connection', (socket) => {
     }
     else{ 
       const user = await User.findById(userId).select('fcm_token')
-        sendMessage(message.full_name, message,user.fcm_token[user.fcm_token.length-1]);    
+        sendMessage(message.full_name, message,user.fcm_token);    
     }
   })
   socket.on('offertSend', async({ userId,myId, message,price,title,image }) => { 

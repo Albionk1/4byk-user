@@ -72,7 +72,7 @@ module.exports.login = async (req, res) => {
         }
         const token = createToken(user._id)
         if(!user.fcm_token.includes(fcm_token)&&fcm_token){
-         user.fcm_token.push(fcm_token)
+         user.fcm_token=fcm_token
          await user.save()
         }
         res.send({ data: { user },token,status:'success'})
@@ -400,7 +400,7 @@ module.exports.loginOrCreateGoogle = async(req,res)=>{
     if(userGoogleId){
       const token = createToken(userGoogleId._id)
       if(!userGoogleId.fcm_token.includes(fcm_token)&&fcm_token){
-        userGoogleId.fcm_token.push(fcm_token)
+        userGoogleId.fcm_token=fcm_token
        await userGoogleId.save()
       }
       return  res.send({ data: { user:userGoogleId },token,status:'success'})
@@ -410,7 +410,7 @@ module.exports.loginOrCreateGoogle = async(req,res)=>{
       userEmail.googleId=googleId
      const token = createToken(userEmail._id)
      if(!userEmail.fcm_token.includes(fcm_token)&&fcm_token){
-      userEmail.fcm_token.push(fcm_token)
+      userEmail.fcm_token=fcm_token
      }
      await userEmail.save()
      return  res.send({ data: { user:userEmail },token,status:'success'})
@@ -450,7 +450,7 @@ module.exports.loginOrCreateGoogle = async(req,res)=>{
 user.googleId=googleId
 const token = createToken(user._id)
 if(!user.fcm_token.includes(fcm_token)&&fcm_token){
-  user.fcm_token.push(fcm_token)
+  user.fcm_token=fcm_token
 }
 await user.save()
 return  res.send({ data: { user },token,status:'success'})    
@@ -470,7 +470,7 @@ module.exports.loginOrCreateApple = async(req,res)=>{
     if(userFacebookId){
       const token = createToken(userFacebookId._id)
       if(!userFacebookId.fcm_token.includes(fcm_token)&&fcm_token){
-        userFacebookId.fcm_token.push(fcm_token)
+        userFacebookId.fcm_token=fcm_token
        await userFacebookId.save()
       }
       return  res.send({ data: { user:userFacebookId },token,status:'success'})
@@ -480,7 +480,7 @@ module.exports.loginOrCreateApple = async(req,res)=>{
       userEmail.appleId=appleId
      const token = createToken(userEmail._id)
      if(!userEmail.fcm_token.includes(fcm_token)&&fcm_token){
-      userEmail.fcm_token.push(fcm_token)
+      userEmail.fcm_token=fcm_token
      }
      await userEmail.save()
      return  res.send({ data: { user:userEmail },token,status:'success'})
@@ -520,7 +520,7 @@ module.exports.loginOrCreateApple = async(req,res)=>{
 user.appleId=appleId
 const token = createToken(user._id)
 if(!user.fcm_token.includes(fcm_token)&&fcm_token){
-  user.fcm_token.push(fcm_token)
+  user.fcm_token=fcm_token
 }
 await user.save()
 return  res.send({ data: { user },token,status:'success'})    
