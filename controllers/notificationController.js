@@ -110,7 +110,7 @@ module.exports.getNotificationsCount=async(req,res)=>{
 
 module.exports.markAllNotificationsToRead=async(req,res)=>{
   try{
-    const notifications = await Notification.updateMany({to:req.user._id,status:'seen'},{status:'delivered'})
+    const notifications = await Notification.updateMany({to:req.user._id,status:'delivered'},{status:'seen'})
     res.send({
       status: 'success',
       message: 'Marked all as read',
