@@ -19,12 +19,18 @@ exports.initializeApp = () => {
 
 exports.sendMessage =  (title, body,token) => { 
   try{
-  // Define the message payload
+  const data = {
+   
+    body: JSON.stringify(body),  // You can also include the entire object as a string if needed
+  }
 const message = {
     notification: {
-      title,
-      body
+      title ,
+      body:body.message,
+      // payload:JSON.stringify(body)
+
     },
+    data,
     token,
   };
   
@@ -35,6 +41,7 @@ const message = {
     })
     .catch((error) => {
       // Queuing...
+      console.log(error)
       console.error('Token i perdoruesit nuk ekziston');
  
     });
