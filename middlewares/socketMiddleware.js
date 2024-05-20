@@ -13,7 +13,7 @@ const { initializeApp, sendMessage } = require('../controllers/fcm_notifications
          data.type ='notification'
          data.n_payload=data.payload
          delete data.payload
-         sendMessage(data.user.full_name,data,userNotify.fcm_token[userNotify.fcm_token.length-1]);  
+         sendMessage(data.user.full_name,data,userNotify.fcm_token);  
       }
      };
      next();

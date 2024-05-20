@@ -23,9 +23,10 @@ const handleErrors = (err) => {
 
  module.exports.addNotification = async(req,res)=>{
   try{
-    const {to,message,n_type,url} = req.body
-      const notification = await Notification.create({by:req.user._id,to,message,n_type,url})
-      // req.sendSocketMessage('notification', {user:{name:req.user.full_name,id:req.user._id},message,n_type,url,date:notification.createdAt},to)
+    const {to,message,n_type,url,payload} = req.body
+      const notification = await Notification.create({by:req.user._id,to,message,n_type,url,payload})
+      const user = req.user
+      req.sendSocketMessage('notification', {user:{full_name:user.full_name,id:user._id,image:user.image},message,n_type,url,date:notification.createdAt,payload},to)
       res.send({status:'success',message:'Notification sent'})
       
   }
