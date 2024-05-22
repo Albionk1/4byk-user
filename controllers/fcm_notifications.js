@@ -31,6 +31,18 @@ const message = {
 
     },
     data,
+    android: {
+      notification: {
+        tag: 'person_a', 
+      },
+    },
+    apns: {
+      payload: {
+        aps: {
+          'thread-id': 'person_a', 
+        },
+      },
+    },
     token,
   };
   

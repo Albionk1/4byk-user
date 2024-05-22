@@ -122,7 +122,7 @@ module.exports.follow = async(req,res)=>{
  module.exports.getMyFollowing = async(req,res)=>{
   try{
     let pageNumber = parseInt(req.query.pageNumber)|| 0
-    const following = await Follow.find({userId:req.query.user}).populate('friendId','image full_name').skip(pageNumber*10).limit(10)
+    const following = await Follow.find({userId:req.query.user}).populate('friendId','image full_name').skip(pageNumber*20).limit(20)
     const totalFollowers = await Follow.countDocuments({userId:req.query.user})
     res.send({status:'success',following,totalFollowers})
   }
@@ -134,7 +134,7 @@ module.exports.follow = async(req,res)=>{
  module.exports.getMyFollowers = async(req,res)=>{
    try{
      let pageNumber = parseInt(req.query.pageNumber)|| 0
-     const followers = await Follow.find({friendId:req.query.user}).populate('userId','image full_name').skip(pageNumber*10).limit(10)
+     const followers = await Follow.find({friendId:req.query.user}).populate('userId','image full_name').skip(pageNumber*20).limit(20)
      const totalFollowers = await Follow.countDocuments({friendId:req.query.user})
      res.send({status:'success',followers,totalFollowers})
    }
