@@ -33,13 +33,13 @@ const message = {
     data,
     android: {
       notification: {
-        tag: 'person_a', 
+        tag:  body.n_type? body.n_type:'person_a', 
       },
     },
     apns: {
       payload: {
         aps: {
-          'thread-id': 'person_a', 
+          'thread-id':  body.n_type? body.n_type:'person_a', 
         },
       },
     },
@@ -49,7 +49,7 @@ const message = {
   // Send the message using the Firebase Cloud Messaging API
   admin.messaging().send(message)
     .then((response) => {
-        console.log('Successfully sent message:',   title, body);    
+        // console.log('Successfully sent message:',   title, body);    
     })
     .catch((error) => {
       // Queuing...
