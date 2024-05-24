@@ -71,7 +71,7 @@ module.exports.login = async (req, res) => {
           throw Error('incorrect password')
         }
         const token = createToken(user._id)
-        if(!user.fcm_token.includes(fcm_token)&&fcm_token){
+        if(fcm_token){
          user.fcm_token=fcm_token
          await user.save()
         }
@@ -449,7 +449,7 @@ module.exports.loginOrCreateGoogle = async(req,res)=>{
 })
 user.googleId=googleId
 const token = createToken(user._id)
-if(!user.fcm_token.includes(fcm_token)&&fcm_token){
+if(fcm_token){
   user.fcm_token=fcm_token
 }
 await user.save()
@@ -519,7 +519,7 @@ module.exports.loginOrCreateApple = async(req,res)=>{
 })
 user.appleId=appleId
 const token = createToken(user._id)
-if(!user.fcm_token.includes(fcm_token)&&fcm_token){
+if(fcm_token){
   user.fcm_token=fcm_token
 }
 await user.save()
