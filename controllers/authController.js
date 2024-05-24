@@ -452,10 +452,10 @@ module.exports.follow = async(req,res)=>{
   if(user[0].language =='en')message='Started following you'
   if(user[0].language =='al')message='Filloi të të djek'
       if (process.env.NODE_ENV === 'development') {
-        const response = await axios.post('http://localhost:3001/notification/add-notification', { to: req.body.friend, by: req.user._id, n_type: 'follow', url: '/client-products/' + req.body.friend,payload})
+        const response = await axios.post('http://localhost:3001/notification/add-notification', { to: req.body.friend, by: req.user._id, n_type: 'follow', url: '/client-products/' + req.body.friend,message,payload})
       }
       else {
-        const response = await axios.post(process.env.URL_AUTh+'/notification/add-notification', { to: req.body.friend, by: req.user._id, n_type: 'follow', url: '/client-products/' + req.body.friend,payload})
+        const response = await axios.post(process.env.URL_AUTh+'/notification/add-notification', { to: req.body.friend, by: req.user._id, n_type: 'follow', url: '/client-products/' + req.body.friend,message,payload})
       }
       return res.send({status:'success',message:'added'})
     }
