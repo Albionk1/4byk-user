@@ -414,6 +414,7 @@ module.exports.getUserBusinessTable = async (req, res) => {
 module.exports.follow = async(req,res)=>{
   try{
     const follow = await Follow.findOne({userId:req.user._id,friendId:req.body.friend})
+    let user
     // const following = await Follow.countDocuments({friendId:req.user._id,userId:req.body.friend})
   //const room = await Room.findOne({room:[req.user._id, req.body.friend].join('')})
     if(follow){
@@ -438,7 +439,18 @@ module.exports.follow = async(req,res)=>{
         url:'/client-products/' + req.user._id
       }
     }
-    payload.message=req.body.full_name +'followed you'
+    if (process.env.NODE_ENV === 'development') {
+      const response = await axios.post('http://localhost:3001/get-users-filter', { filter: { _id: { $in: [req.body.friend] } }, select: ' language', skip: 0, limit: 1 })
+      user = response.data[0];
+    }
+    else {
+      const response = await axios.post(process.env.URL_AUTh+'/get-users-filter', { filter: { _id: { $in: [req.body.friend] } }, select: ' language', skip: 0, limit: 1})
+      user = response.data[0];
+    }
+    let message 
+    if(user[0].language =='de'||!user[0].language)message='Begann dir zu folgen'
+  if(user[0].language =='en')message='Started following you'
+  if(user[0].language =='al')message='Filloi të të djek'
       if (process.env.NODE_ENV === 'development') {
         const response = await axios.post('http://localhost:3001/notification/add-notification', { to: req.body.friend, by: req.user._id, n_type: 'follow', url: '/client-products/' + req.body.friend,payload})
       }
